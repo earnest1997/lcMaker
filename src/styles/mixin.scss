@@ -31,3 +31,10 @@
     }
   }
 }
+
+@mixin flex($a:center,$j:center,$f:row){
+  display: flex;
+  align-items: $a;
+  justify-content: $j;
+  flex-direction: $f;
+}

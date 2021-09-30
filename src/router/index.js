@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '@/views/index/Home.vue'
+import Home from '@/views/index/home/index'
+import Form from '@/views/index/form/index'
+import Custom from '@/views/index/custom/index'
 
 Vue.use(VueRouter)
 
@@ -19,6 +21,16 @@ const routes = [
     path: '/tinymce',
     name: 'tinymce',
     component: () => import(/* webpackChunkName: "tinymce-example" */'@/components/tinymce/example/Index.vue')
+  },
+  {
+    path: '/custom',
+    name: 'custom',
+    component: () => import(Custom)
+  },
+  {
+    path: '/form',
+    name: 'form',
+    component: () => import(Form)
   }
 ]
 

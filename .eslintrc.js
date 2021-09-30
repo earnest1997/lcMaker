@@ -14,6 +14,8 @@ module.exports = {
     'import/extensions': 0,
     'import/no-unresolved': 0,
     'comma-dangle': [2, 'never'],
+    'symbol-description':[2, 'never'],
+    'vue/attribute-hyphenation':[2, 'never'],
     semi: [2, 'never'],
     'no-unused-expressions': 0,
     'no-plusplus': 0,
