@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '@/views/index/home/index'
-import Form from '@/views/index/form/index'
-import Custom from '@/views/index/custom/index'
+import Home from '../views/index/home/index'
 
 Vue.use(VueRouter)
 
@@ -25,12 +23,12 @@ const routes = [
   {
     path: '/custom',
     name: 'custom',
-    component: () => import(Custom)
+    component: () => import(/* webpackChunkName: "custom-example" */'@/views/index/custom/index')
   },
   {
     path: '/form',
     name: 'form',
-    component: () => import(Form)
+    component: () => import(/* webpackChunkName: "form-example" */'@/views/index/form/index.vue')
   }
 ]
 

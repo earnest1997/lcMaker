@@ -117,6 +117,7 @@ function buildListeners(scheme) {
 }
 
 export default {
+  name: 'Parser',
   components: {
     render
   },

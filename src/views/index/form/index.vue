@@ -13,7 +13,7 @@
         <div class="components-list">
           <div v-for="(item, listIndex) in leftComponents" :key="listIndex">
             <div class="components-title">
-              <svg-icon icon-class="component" />
+              <svg-icon iconClass="component" />
               {{ item.title }}
             </div>
             <draggable
@@ -32,7 +32,7 @@
                 @click="addComponent(element)"
               >
                 <div class="components-body">
-                  <svg-icon :icon-class="element.__config__.tagIcon" />
+                  <svg-icon :iconClass="element.__config__.tagIcon" />
                   {{ element.__config__.label }}
                 </div>
               </div>
@@ -64,19 +64,19 @@
         <el-row class="center-board-row" :gutter="formConf.gutter">
           <el-form
             :size="formConf.size"
-            :label-position="formConf.labelPosition"
+            :labelPosition="formConf.labelPosition"
             :disabled="formConf.disabled"
-            :label-width="formConf.labelWidth + 'px'"
+            :labelWidth="formConf.labelWidth + 'px'"
           >
             <draggable class="drawing-board" :list="drawingList" :animation="340" group="componentsGroup">
               <draggable-item
                 v-for="(item, index) in drawingList"
                 :key="item.renderKey"
-                :drawing-list="drawingList"
-                :current-item="item"
+                :drawingList="drawingList"
+                :currentItem="item"
                 :index="index"
-                :active-id="activeId"
-                :form-conf="formConf"
+                :activeId="activeId"
+                :formConf="formConf"
                 @activeItem="activeFormItem"
                 @copyItem="drawingItemCopy"
                 @deleteItem="drawingItemDelete"
@@ -91,29 +91,29 @@
     </div>
 
     <right-panel
-      :active-data="activeData"
-      :form-conf="formConf"
-      :show-field="!!drawingList.length"
+      :activeData="activeData"
+      :formConf="formConf"
+      :showField="!!drawingList.length"
       @tag-change="tagChange"
       @fetch-data="fetchData"
     />
 
     <form-drawer
       :visible.sync="drawerVisible"
-      :form-data="formData"
+      :formData="formData"
       size="100%"
-      :generate-conf="generateConf"
+      :generateConf="generateConf"
     />
     <json-drawer
       size="60%"
       :visible.sync="jsonDrawerVisible"
-      :json-str="JSON.stringify(formData)"
+      :jsonStr="JSON.stringify(formData)"
       @refresh="refreshJson"
     />
     <code-type-dialog
       :visible.sync="dialogVisible"
       title="选择生成类型"
-      :show-file-name="showFileName"
+      :showFileName="showFileName"
       @confirm="generate"
     />
     <input id="copyNode" type="hidden">
@@ -142,8 +142,8 @@ import { makeUpJs } from '@/components/generator/js'
 import { makeUpCss } from '@/components/generator/css'
 import drawingDefalut from '@/components/generator/drawingDefalut'
 import logo from '@/assets/logo.png'
-import CodeTypeDialog from './CodeTypeDialog'
-import DraggableItem from './DraggableItem'
+import CodeTypeDialog from '../CodeTypeDialog'
+import DraggableItem from '../DraggableItem'
 import {
   getDrawingList, saveDrawingList, getIdGlobal, saveIdGlobal, getFormConf
 } from '@/utils/db'

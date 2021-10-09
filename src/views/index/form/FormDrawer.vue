@@ -5,7 +5,7 @@
         <el-row style="height:100%;overflow:auto">
           <el-col :md="24" :lg="12" class="left-editor">
             <div class="setting" title="资源引用" @click="showResource">
-              <el-badge :is-dot="!!resources.length" class="item">
+              <el-badge :isDot="!!resources.length" class="item">
                 <i class="el-icon-setting" />
               </el-badge>
             </div>
@@ -70,7 +70,7 @@
     </el-drawer>
     <resource-dialog
       :visible.sync="resourceVisible"
-      :origin-resource="resources"
+      :originResource="resources"
       @save="setResource"
     />
   </div>
@@ -85,7 +85,7 @@ import {
 import { makeUpJs } from '@/components/generator/js'
 import { makeUpCss } from '@/components/generator/css'
 import { exportDefault, beautifierConf, titleCase } from '@/utils/index'
-import ResourceDialog from './ResourceDialog'
+import ResourceDialog from '../ResourceDialog'
 import loadMonaco from '@/utils/loadMonaco'
 import loadBeautifier from '@/utils/loadBeautifier'
 

@@ -3,8 +3,8 @@
     <h2>Admin-Comp-Generator</h2>
     <h3>选择一种类型开始吧</h3>
     <div class="btn-wrapper">
-      <Btn buttonText="业务组件" />
-      <Btn buttonText="自定义表单" />
+      <Btn buttonText="业务组件" @click="turn('custom')" />
+      <Btn buttonText="自定义表单" @click="turn('form')" />
     </div>
   </div>
 </template>
@@ -12,7 +12,12 @@
 import Btn from './Btn'
 
 export default {
-  components: { Btn }
+  components: { Btn },
+  methods: {
+    turn(path) {
+      this.$router.push({ path: `/${path}` })
+    }
+  }
 }
 </script>
 <style lang="scss">

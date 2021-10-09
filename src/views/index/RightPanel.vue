@@ -565,6 +565,13 @@
 
           <template v-if="Array.isArray(activeData.__config__.regList)">
             <el-divider>正则校验</el-divider>
+            <div class="reg-test">
+              <h5>正则自测</h5>
+              <el-form-item v-model="reg" :rules="[{validator:validateReg,trigger:'blur'}]" prop="reg">
+                <el-input v-model="reg" placeholder="请输入正则表达式" />
+              </el-form-item>
+              <el-input v-model="regTest" type="textarea" placeholder="请输入验证文本" />
+            </div>
             <div
               v-for="(item, index) in activeData.__config__.regList"
               :key="index"
@@ -823,9 +830,22 @@ export default {
         saveFormConf(val)
       },
       deep: true
+    },
+    reg(val) {
+      if (!val) return
+      
     }
   },
   methods: {
+    validateReg(rule, value, cb) {
+      try {
+        const reg = new RegExp(value)
+      } catch (err) {
+        cb(new Error('不合法的正则表达式'))
+        return
+      }
+      cb()
+    },
     addReg() {
       this.activeData.__config__.regList.push({
         pattern: '',

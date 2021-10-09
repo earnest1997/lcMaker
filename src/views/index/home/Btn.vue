@@ -1,6 +1,6 @@
 <!-- 容器元素旋转，第一面跟第二面形成一个九十度的折角就行-->
 <template>
-  <div ref="fancyButton" class="fancy-button" :style="buttonStyle">
+  <div ref="fancyButton" class="fancy-button" :style="buttonStyle" v-on="$listeners">
     <div class="fancy-flipper">
       <div class="fancy-front" :style="fancyFrontStyle">
         {{ buttonText }}
