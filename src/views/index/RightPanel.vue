@@ -570,7 +570,7 @@
               <el-form-item v-model="reg" :rules="[{validator:validateReg,trigger:'blur'}]" prop="reg">
                 <el-input v-model="reg" placeholder="请输入正则表达式" />
               </el-form-item>
-              <el-input v-model="regTest" type="textarea" placeholder="请输入验证文本" />
+              <el-input id="regTest" ref="regTest" v-model="regTest" type="textarea" placeholder="请输入验证文本" />
             </div>
             <div
               v-for="(item, index) in activeData.__config__.regList"
@@ -687,6 +687,8 @@ export default {
   props: ['showField', 'activeData', 'formConf'],
   data() {
     return {
+      regTest: '',
+      reg: '',
       currentTab: 'field',
       currentNode: null,
       dialogVisible: false,
@@ -831,9 +833,25 @@ export default {
       },
       deep: true
     },
-    reg(val) {
-      if (!val) return
-      
+    regTest(text) {
+      if (!text || !this.reg) return
+      // const input = this.$refs.
+      const input = document.getElementById('regTest')
+      // const
+      let { reg } = this
+      reg = reg.replace(/^\//, '').replace(/\/$/, '')
+      reg = new RegExp(reg)
+      const matches = this.regTest.match(reg) ?? []
+      console.log(matches, 'ss')
+      const textNode = input
+      const rangeObj = document.createRange()
+      rangeObj.setStart(textNode, 1)
+      rangeObj.setEnd(textNode, 2)
+      matches.forEach(matchStr => {
+        const len = matchStr.length
+        const start = this.regTest.indexOf(matchStr)
+        // input.setSelectionRange(start, start + len)
+      })
     }
   },
   methods: {
