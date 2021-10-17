@@ -109,6 +109,8 @@ canvas {
 }
 </style>
 <style lang='scss'>
+@import '@/styles/mixin.scss';
+
 @mixin cursor{
       &::after{
         position: absolute;
@@ -125,6 +127,7 @@ canvas {
       }
 }
 .reg-test-wrapper {
+  width:max-content;
   .el-input {
     background: transparent;
   }
@@ -136,6 +139,11 @@ canvas {
     pointer-events: none;
   }
   textarea{
+    width:215px;
+    box-sizing: border-box;
+    border: 1px solid #DCDFE6;
+    border-radius: 4px;
+    padding:6px 15px;
     font-size:14px;
     letter-spacing:0;
     font-family: Microsoft YaHei;
@@ -159,7 +167,10 @@ left:15px;
     }
     span:last-child{
       position: relative;
-@include cursor;
+@include cursor{
+  top:50%;
+    transform: translateY(-50%);
+}
     }
 }
 @keyframes cursor{
