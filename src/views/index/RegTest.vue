@@ -7,25 +7,43 @@
       prop="reg"
     >
       <el-input v-model="reg" placeholder="请输入正则表达式" />
+      <div class="pattern">
+        /<span @click="togglePattern">{{ pattern.join('') }}</span>
+        <ul class="pattern-list">
+          <li v-for="item in patterns" :key="item.value">
+            <span>{{ item.value }}</span>
+            <span>{{ item.label }}</span>
+          </li>
+        </ul>
+      </div>
     </el-form-item>
     <div class="text">
-      <canvas ref="canvas" />
-      <el-input
+      <textarea
         id="regTest"
         ref="regTest"
         v-model="regTest"
-        type="textarea"
         placeholder="请输入验证文本"
       />
+      <div class="cover">
+        <span v-for="(item,index) in regTest" :key="`${item}-${index}`">{{ item }}</span>
+      </div>
     </div>
   </div>
 </template>
 <script>
+const ctx = null
+const canvasW = 317
+const canvasH = 54
+
 export default {
   data() {
     return {
       regTest: '',
-      reg: ''
+      reg: '',
+      pattern: ['g'],
+      patterns: [{
+        value: 'g', label: '全局匹配'
+      }, { value: 'i', label: '不区分大小写' }]
     }
   },
   computed: {
@@ -37,64 +55,125 @@ export default {
   watch: {
     regs: {
       handler(val) {
-      // eslint-disable-next-line prefer-const
+        // eslint-disable-next-line prefer-const
         let { regTest, reg } = val
-        if (!regTest || !reg) return
-        reg = reg.replace(/^\//, '').replace(/\/$/, '')
-        reg = new RegExp(reg)
-        const matches = regTest.match(reg) ?? []
-        console.log(matches, 'ss')
+        if (!regTest || !reg) {
+          console.log('wth')
+          this.cleanBg()
+          return
+        }
+        this.drawBg()
       },
       deep: true
     }
   },
   methods: {
-    drawBg(reg) {
-      const { canvas } = this.$refs
-      canvas.width = 200
-      canvas.height = 100
-      const ctx = canvas.getContext('2d')
-      // matches.forEach((item, index) => {
-      //   const isOdd = index % 2 === 0
-      //   const fillStyle = isOdd ? 'rgba(77,145,226,.3)' : 'rgba(77,145,226,.6)'
-      //   const { width } = ctx.measureText(item)
-      // })
-      let arr
-      let index = 0
-      const maxW = 500
-      const lineH = 15
-      // eslint-disable-next-line no-cond-assign
-      while (arr = reg.exec(this.regTest) !== null) {
-        ctx.font = '12px Microsoft YaHei'
-        const textWidth = ctx.measureText(this.regTest.slice(0, reg.lastIndex))
-        const start = textWidth % maxW
-        const line = Math.ceil(textWidth / maxW)
-        const top = line * lineH
-        const matchW = ctx.measureText(arr[0])
-        const isOdd = index % 2 === 0
-        const fillStyle = isOdd ? 'rgba(77,145,226,.3)' : 'rgba(77,145,226,.6)'
-        ctx.fillStyle = fillStyle
-        ctx.fillRect(start, top, matchW + 1, lineH)
-        index += 1
+    togglePattern() {},
+    validateReg(rule, value, cb) {
+      if (!value) return
+      value = value.replace(/^\//, '').replace(/\/$/, '')
+      try {
+        const reg = new RegExp(value)
+      } catch (err) {
+        cb(new Error('不合法的正则表达式'))
+        return
       }
-    }
+      cb()
+    },
+    cleanBg() {
+      ctx && ctx.clearRect(0, 0, canvasW, canvasH)
+    },
+    drawBg() {
 
+    }
   }
 }
 </script>
 <style lang='scss' scoped>
-canvas{
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 317px;
+  height: 54px;
+  z-index:1;
+}
+.pattern{
+  position: relative;
+  &-list{
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 200px;
-    height: 100px;
-    }
+    top:-20px;
+    left:-5px;
+    z-index:2;
+  }
+}
 </style>
 <style lang='scss'>
-.reg-test-wrapper{
-.el-input{
-background:transparent;
+@mixin cursor{
+      &::after{
+        position: absolute;
+        top:0;
+        right:-1px;
+        content:"";
+        display: inline-block;
+        width:1px;
+        height:14px;
+        background-color:rgba(0,0,0,.7);
+        /* 关键是中间的过程都是不显示的 */
+        animation: cursor 1.5s infinite steps(1, start);
+        @content;
+      }
 }
+.reg-test-wrapper {
+  .el-input {
+    background: transparent;
+  }
+  .text{
+    position: relative;
+  }
+  canvas{
+    position: absolute;
+    pointer-events: none;
+  }
+  textarea{
+    font-size:14px;
+    letter-spacing:0;
+    font-family: Microsoft YaHei;
+    color:#fff;
+  }
+  textarea:focus + .cover{
+    &:empty {
+@include cursor{
+top:10px;
+left:15px;
+}
+    }
+  }
+  .cover{
+    position: absolute;
+    padding:6px 15px;
+    left:0;
+    top:0;
+    pointer-events: none;
+
+    }
+    span:last-child{
+      position: relative;
+@include cursor;
+    }
+}
+@keyframes cursor{
+0% {
+    opacity: 1;
+    display: block;
+  }
+  50% {
+    opacity: 0;
+    display: none;
+  }
+  100% {
+    opacity: 1;
+    display: block;
+  }
 }
 </style>

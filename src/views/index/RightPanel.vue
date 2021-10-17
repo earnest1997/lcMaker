@@ -565,6 +565,7 @@
 
           <template v-if="Array.isArray(activeData.__config__.regList)">
             <el-divider>正则校验</el-divider>
+            <RegTest/>
             <div
               v-for="(item, index) in activeData.__config__.regList"
               :key="index"
@@ -657,6 +658,7 @@ import {
   inputComponents, selectComponents, layoutComponents
 } from '@/components/generator/config'
 import { saveFormConf } from '@/utils/db'
+import RegTest from './RegTest.vue'
 
 const dateTimeFormat = {
   date: 'yyyy-MM-dd',
@@ -675,7 +677,8 @@ const needRerenderList = ['tinymce']
 export default {
   components: {
     TreeNodeDialog,
-    IconsDialog
+    IconsDialog,
+    RegTest
   },
   props: ['showField', 'activeData', 'formConf'],
   data() {
