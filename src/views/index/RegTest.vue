@@ -16,7 +16,8 @@
         </a>
       </el-form-item>
       <div class="text">
-        <textarea id="regTest" ref="regTest" v-model="regTest" placeholder="请输入验证文本" />
+        <!-- <textarea id="regTest" ref="regTest" v-model="regTest" placeholder="请输入验证文本" /> -->
+        <div contenteditable="true" class="textarea" @input="handleInput" />
         <div class="cover">
           <span v-for="(item,index) in regTest" :key="`${item}-${index}`">{{ item }}</span>
         </div>
@@ -44,7 +45,8 @@ export default {
         value: 'i',
         all: 'insensitive',
         label: '不区分大小写'
-      }]
+      }],
+      matchedStr: []
     }
   },
   computed: {
@@ -67,17 +69,21 @@ export default {
           regTest,
           reg
         } = val
-        if (!regTest || !reg) {
-          console.log('wth')
+         let reg = this.reg.replace(/^\//, '').replace(/\/$/, '')
+      reg = new RegExp(reg, this.pattern.join(''))
+        if (!regTest || !reg || !reg.match(regTest)) {
           this.cleanBg()
           return
         }
-        this.drawBg()
+        this.drawBg(reg)
       },
       deep: true
     }
   },
   methods: {
+    handleInput(e) {
+      this.regTest = e.target.innerHTML
+    },
     handleSelect(item) {
       const { value } = item
       const pattern = value.slice(0, 1)
@@ -99,11 +105,24 @@ export default {
       }
       cb()
     },
-    cleanBg() {
-      ctx && ctx.clearRect(0, 0, canvasW, canvasH)
-    },
-    drawBg() {
-
+    drawBg(reg) {
+      if (this.pattern.includes('g')) {
+      const res=this.regTest.matchAll(reg).map(item=>{
+        let [_,index,input]=res
+        const len=input.length
+        index-=1
+        const newMatched=Array.from({length:len}).map(_=>index+1).join('')
+        this.matchedStr.push(newMatched)
+      })
+      // let start=0
+      // let res=[]
+      //  while(start<=this.regTest.length-1){
+      //    const str=this.regTest.slice(start)
+      //   if(reg.test(str)){
+      //      const len=str.match()
+      //   }
+      //  }
+      }
     }
   }
 }
@@ -170,14 +189,14 @@ canvas {
           position: absolute;
           right:8px;
           top:17px;
-content:"";
-width:10px;
-height:4px;
-border-color:transparent transparent #2c5c97 #2c5c97;
-border-width:2px;
-border-style: solid;
-border-radius: 7px;
-transform: rotate(-45deg);
+          content:"";
+          width:10px;
+          height:4px;
+          border-color:transparent transparent #2c5c97 #2c5c97;
+          border-width:2px;
+          border-style: solid;
+          border-radius: 7px;
+          transform: rotate(-45deg);
         }
     }
 }
@@ -221,8 +240,10 @@ transform: rotate(-45deg);
         pointer-events: none;
     }
 
-    textarea {
+    .textarea {
+        display: inline-block;
         width: 215px;
+        min-height: 28px;
         box-sizing: border-box;
         border: 1px solid #DCDFE6;
         border-radius: 4px;
@@ -230,16 +251,15 @@ transform: rotate(-45deg);
         font-size: 14px;
         letter-spacing: 0;
         font-family: Microsoft YaHei;
-        color: #fff;
+        color:transparent;
     }
 
-    textarea:focus+.cover {
+    .textarea:focus+.cover {
         &:empty {
             @include cursor {
                 // top: 10px;
-                // left: 15px;
-                left:0;
-                top:0;
+                left: 15px;
+                top:7px;
             }
         }
     }
@@ -247,12 +267,14 @@ transform: rotate(-45deg);
     .cover {
         position: absolute;
         width: 183px;
-        left: 100px;
-        top:10px;
+        font-size:14px;
+        left: 90px;
+        padding:7px 15px;
+        top:0;
         text-align: left;
         pointer-events: none;
-display: flex;
-flex-wrap: wrap;
+        display: flex;
+        flex-wrap: wrap;
     >span:last-child {
         position: relative;
 
