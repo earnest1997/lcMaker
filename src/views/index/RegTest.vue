@@ -1,22 +1,25 @@
 <template>
   <div class="reg-test-wrapper">
     <h4>正则自测</h4>
-    <el-form-item v-model="reg" :rules="[{ validator: validateReg, trigger: 'blur' }]" prop="reg">
-      <el-input v-model="reg" placeholder="请输入正则表达式" />
-      <a class="pattern" href="javascript:void 0;">
-        /<span @click="togglePattern">{{ pattern.join('') }}</span>
-        <ul class="pattern-list">
-          <li v-for="item in patterns" :key="item.value">
-            <span>{{ item.value }}</span>
-            <span>{{ item.label }}</span>
-          </li>
-        </ul>
-      </a>
-    </el-form-item>
-    <div class="text">
-      <textarea id="regTest" ref="regTest" v-model="regTest" placeholder="请输入验证文本" />
-      <div class="cover">
-        <span v-for="(item,index) in regTest" :key="`${item}-${index}`">{{ item }}</span>
+    <div class="content">
+      <el-form-item v-model="reg" :rules="[{ validator: validateReg, trigger: 'blur' }]" prop="reg">
+        <el-input v-model="reg" placeholder="请输入正则表达式" />
+        <a class="pattern" href="javascript:void 0;">
+          /<span @click="togglePattern">{{ pattern.join('') }}</span>
+          <ul class="pattern-list">
+            <li>REGEX FLAGS</li>
+            <li v-for="item in patterns" :key="item.value" :class="pattern.includes(item.value) ? &quot;active&quot;:&quot;&quot;" @click="handleSelect(item)">
+              <span>{{ item.all }}</span>
+              <span>{{ item.label }}</span>
+            </li>
+          </ul>
+        </a>
+      </el-form-item>
+      <div class="text">
+        <textarea id="regTest" ref="regTest" v-model="regTest" placeholder="请输入验证文本" />
+        <div class="cover">
+          <span v-for="(item,index) in regTest" :key="`${item}-${index}`">{{ item }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -35,9 +38,11 @@ export default {
       pattern: ['g'],
       patterns: [{
         value: 'g',
+        all: 'global',
         label: '全局匹配'
       }, {
         value: 'i',
+        all: 'insensitive',
         label: '不区分大小写'
       }]
     }
@@ -73,6 +78,15 @@ export default {
     }
   },
   methods: {
+    handleSelect(item) {
+      const { value } = item
+      const pattern = value.slice(0, 1)
+      if (this.pattern.includes(pattern)) {
+        this.pattern = this.pattern.filter(_item => _item !== pattern)
+      } else {
+        this.pattern.push(pattern)
+      }
+    },
     togglePattern() {},
     validateReg(rule, value, cb) {
       if (!value) return
@@ -96,6 +110,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/styles/common.scss';
+
 canvas {
     position: absolute;
     top: 0;
@@ -105,11 +121,25 @@ canvas {
     z-index: 1;
 }
 
+.content{
+  margin-top:10px;
+      background: #f8f8f8;
+      padding: 12px 6px;
+      border-radius: 4px;
+}
+
 .pattern {
     position: relative;
     width: 12px;
     z-index: 2;
-
+    margin-right:10px;
+    text-decoration: none;
+    &:focus {
+      .pattern-list {
+            opacity: 1;
+            pointer-events: unset;
+        }
+    }
     &-list {
         position: absolute;
         width: 220px;
@@ -118,12 +148,36 @@ canvas {
         right: 0;
         z-index: 2;
         pointer-events: none;
-    }
-
-    &:focus {
-        .pattern-list {
-            opacity: 1;
-            pointer-events: unset;
+        li{
+          position: relative;
+          cursor: pointer;
+          color: #606266;
+        }
+        li:first-child{
+          color: #2b568a;
+          text-transform: uppercase;
+    font-weight: 600;
+          border-bottom:1px solid #e1e1e1;
+          pointer-events: none;
+        }
+        li:not(:first-child):first-letter{
+          color:#2c5c97;
+        }
+        li:hover{
+          background: #f7f7f7;
+        }
+        li.active::after{
+          position: absolute;
+          right:8px;
+          top:17px;
+content:"";
+width:10px;
+height:4px;
+border-color:transparent transparent #2c5c97 #2c5c97;
+border-width:2px;
+border-style: solid;
+border-radius: 7px;
+transform: rotate(-45deg);
         }
     }
 }
@@ -148,12 +202,18 @@ canvas {
 }
 
 .reg-test-wrapper {
+  margin-bottom:18px;
+  h4{
+    font-size: 14px;
+    color: #606266;
+  }
     .el-input {
         background: transparent;
     }
 
     .text {
         position: relative;
+        text-align: right;
     }
 
     canvas {
@@ -176,21 +236,23 @@ canvas {
     textarea:focus+.cover {
         &:empty {
             @include cursor {
-                top: 10px;
-                left: 15px;
+                // top: 10px;
+                // left: 15px;
+                left:0;
+                top:0;
             }
         }
     }
 
     .cover {
         position: absolute;
-        padding: 6px 15px;
-        left: 0;
-        top: 0;
+        width: 183px;
+        left: 100px;
+        top:10px;
+        text-align: left;
         pointer-events: none;
-
-    }
-
+display: flex;
+flex-wrap: wrap;
     >span:last-child {
         position: relative;
 
@@ -200,8 +262,12 @@ canvas {
         }
     }
 
+    }
+
     .el-form-item__content:first-child {
         position: relative;
+        width:215px;
+        float:right;
     }
 
     .pattern {
