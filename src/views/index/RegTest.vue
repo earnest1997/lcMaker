@@ -2,7 +2,7 @@
   <div class="reg-test-wrapper">
     <h4>正则自测</h4>
     <div class="content">
-      <el-form-item v-model="reg" :rules="[{ validator: validateReg, trigger: 'blur' }]" prop="reg">
+      <el-form-item v-model="reg" :rules="[{ validator: validateReg, trigger: 'change' }]" prop="reg">
         <el-input v-model="reg" placeholder="请输入正则表达式" />
         <a class="pattern" href="javascript:void 0;">
           /<span @click="togglePattern">{{ pattern.join('') }}</span>
@@ -69,13 +69,18 @@ export default {
           regTest,
           reg
         } = val
-         let reg = this.reg.replace(/^\//, '').replace(/\/$/, '')
-      reg = new RegExp(reg, this.pattern.join(''))
-        if (!regTest || !reg || !reg.match(regTest)) {
+        let regToBeMatch = this.reg.replace(/^\//, '').replace(/\/$/, '').replace(/\\/, '\\')
+        console.log(this.pattern.join(''))
+        try {
+          regToBeMatch = new RegExp(reg, this.pattern.join(''))
+        } catch (err) {
+          return
+        }
+        if (!regTest || !regToBeMatch || !regTest.match(regToBeMatch)) {
           this.cleanBg()
           return
         }
-        this.drawBg(reg)
+        this.drawBg(regToBeMatch)
       },
       deep: true
     }
@@ -107,22 +112,28 @@ export default {
     },
     drawBg(reg) {
       if (this.pattern.includes('g')) {
-      const res=this.regTest.matchAll(reg).map(item=>{
-        let [_,index,input]=res
-        const len=input.length
-        index-=1
-        const newMatched=Array.from({length:len}).map(_=>index+1).join('')
-        this.matchedStr.push(newMatched)
-      })
-      // let start=0
-      // let res=[]
-      //  while(start<=this.regTest.length-1){
-      //    const str=this.regTest.slice(start)
-      //   if(reg.test(str)){
-      //      const len=str.match()
-      //   }
-      //  }
+        console.log(this.regTest.matchAll(reg), 'ss')
+        const res = Array.from(this.regTest.matchAll(reg)).map(item => {
+          let { index } = item
+          const len = item[0].length
+          index -= 1
+          const newMatched = Array.from({ length: len }).map(_ => index + 1).join('')
+          return newMatched
+        })
+        this.matchedStr = [...res, this.matchedStr]
+        // let start=0
+        // let res=[]
+        //  while(start<=this.regTest.length-1){
+        //    const str=this.regTest.slice(start)
+        //   if(reg.test(str)){
+        //      const len=str.match()
+        //   }
+        //  }
+        console.log(this.matchedStr, 's')
       }
+    },
+    cleanBg() {
+      this.matchedStr = []
     }
   }
 }
