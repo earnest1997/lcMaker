@@ -1,14 +1,31 @@
-diff --git b/src/views/index/a.js a/src/views/index/a.js
-index e69de29..e3918ef 100644
---- b/src/views/index/a.js
-+++ a/src/views/index/a.js
-@@ -0,0 +1 @@
-+console.log(909)
-\ No newline at end of file
-diff --git b/src/views/index/a.js-e a/src/views/index/a.js-e
-index e69de29..e3918ef 100644
---- b/src/views/index/a.js-e
-+++ a/src/views/index/a.js-e
-@@ -0,0 +1 @@
-+console.log(909)
-\ No newline at end of file
+diff --git b/add-debug.patch a/add-debug.patch
+index e69de29..0832b2c 100644
+--- b/add-debug.patch
++++ a/add-debug.patch
+@@ -0,0 +1,14 @@
++diff --git b/src/views/index/a.js a/src/views/index/a.js
++index e69de29..e3918ef 100644
++--- b/src/views/index/a.js
+++++ a/src/views/index/a.js
++@@ -0,0 +1 @@
+++console.log(909)
++\ No newline at end of file
++diff --git b/src/views/index/a.js-e a/src/views/index/a.js-e
++index e69de29..e3918ef 100644
++--- b/src/views/index/a.js-e
+++++ a/src/views/index/a.js-e
++@@ -0,0 +1 @@
+++console.log(909)
++\ No newline at end of file
+diff --git b/src/views/index/form/FormDrawer.vue a/src/views/index/form/FormDrawer.vue
+index 05ad093..8511502 100644
+--- b/src/views/index/form/FormDrawer.vue
++++ a/src/views/index/form/FormDrawer.vue
+@@ -128,6 +128,7 @@ export default {
+   },
+   watch: {},
+   created() {
++    console.log('Im so cool')
+   },
+   mounted() {
+     window.addEventListener('keydown', this.preventDefaultSave)
