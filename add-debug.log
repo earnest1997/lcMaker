@@ -1,64 +1,79 @@
 diff --git b/add-debug.log a/add-debug.log
-index e69de29..117c1c4 100644
+index e69de29..62c16f1 100644
 --- b/add-debug.log
 +++ a/add-debug.log
-@@ -0,0 +1,76 @@
+@@ -0,0 +1,81 @@
 +diff --git b/add-debug.log a/add-debug.log
-+index e69de29..88bd1d0 100644
++index e69de29..117c1c4 100644
 +--- b/add-debug.log
 ++++ a/add-debug.log
-+@@ -0,0 +1,71 @@
++@@ -0,0 +1,76 @@
 ++diff --git b/add-debug.log a/add-debug.log
-++index e69de29..0bd1704 100644
+++index e69de29..88bd1d0 100644
 ++--- b/add-debug.log
 +++++ a/add-debug.log
-++@@ -0,0 +1,56 @@
+++@@ -0,0 +1,71 @@
 +++diff --git b/add-debug.log a/add-debug.log
-+++index e69de29..a476506 100644
++++index e69de29..0bd1704 100644
 +++--- b/add-debug.log
 ++++++ a/add-debug.log
-+++@@ -0,0 +1,41 @@
++++@@ -0,0 +1,56 @@
 ++++diff --git b/add-debug.log a/add-debug.log
-++++index e69de29..9e3e05c 100644
+++++index e69de29..a476506 100644
 ++++--- b/add-debug.log
 +++++++ a/add-debug.log
-++++@@ -0,0 +1,36 @@
+++++@@ -0,0 +1,41 @@
 +++++diff --git b/add-debug.log a/add-debug.log
-+++++index e69de29..6b6674c 100644
++++++index e69de29..9e3e05c 100644
 +++++--- b/add-debug.log
 ++++++++ a/add-debug.log
-+++++@@ -0,0 +1,31 @@
-++++++diff --git b/src/views/index/RegTest.vue a/src/views/index/RegTest.vue
-++++++index c266c1b..d9f639d 100644
-++++++--- b/src/views/index/RegTest.vue
-+++++++++ a/src/views/index/RegTest.vue
-++++++@@ -64,12 +64,14 @@ export default {
-++++++   watch: {
-++++++     regs: {
-++++++       handler(val) {
-++++++         // eslint-disable-next-line prefer-const
-++++++         const {
-++++++           regTest,
-++++++           reg
-++++++         } = val
-++++++         let regToBeMatch = this.reg.replace(/^\//, '').replace(/\/$/, '').replace(/\\/, '\\')
-++++++         try {
-++++++           regToBeMatch = new RegExp(reg, this.pattern.join(''))
-++++++         } catch (err) {
-++++++@@ -111,6 +113,7 @@ export default {
-++++++     },
-++++++     drawBg(reg) {
-++++++       if (this.pattern.includes('g')) {
-++++++         const res = Array.from(this.regTest.matchAll(reg)).map(item => {
-++++++           let { index } = item
-++++++           const len = item[0].length
-++++++@@ -127,6 +130,7 @@ export default {
-++++++         //      const len=str.match()
-++++++         //   }
-++++++         //  }
-++++++       }
-++++++     },
-++++++     cleanBg() {
++++++@@ -0,0 +1,36 @@
+++++++diff --git b/add-debug.log a/add-debug.log
+++++++index e69de29..6b6674c 100644
+++++++--- b/add-debug.log
++++++++++ a/add-debug.log
+++++++@@ -0,0 +1,31 @@
++++++++diff --git b/src/views/index/RegTest.vue a/src/views/index/RegTest.vue
++++++++index c266c1b..d9f639d 100644
++++++++--- b/src/views/index/RegTest.vue
+++++++++++ a/src/views/index/RegTest.vue
++++++++@@ -64,12 +64,14 @@ export default {
++++++++   watch: {
++++++++     regs: {
++++++++       handler(val) {
++++++++         // eslint-disable-next-line prefer-const
++++++++         const {
++++++++           regTest,
++++++++           reg
++++++++         } = val
++++++++         let regToBeMatch = this.reg.replace(/^\//, '').replace(/\/$/, '').replace(/\\/, '\\')
++++++++         try {
++++++++           regToBeMatch = new RegExp(reg, this.pattern.join(''))
++++++++         } catch (err) {
++++++++@@ -111,6 +113,7 @@ export default {
++++++++     },
++++++++     drawBg(reg) {
++++++++       if (this.pattern.includes('g')) {
++++++++         const res = Array.from(this.regTest.matchAll(reg)).map(item => {
++++++++           let { index } = item
++++++++           const len = item[0].length
++++++++@@ -127,6 +130,7 @@ export default {
++++++++         //      const len=str.match()
++++++++         //   }
++++++++         //  }
++++++++       }
++++++++     },
++++++++     cleanBg() {
+++++diff --git b/src/views/index/main.js a/src/views/index/main.js
+++++index 7787b5a..27fd11f 100644
+++++--- b/src/views/index/main.js
++++++++ a/src/views/index/main.js
+++++@@ -16,3 +16,4 @@ new Vue({
+++++   render: h => h(App)
+++++ }).$mount('#app')
+++++ 
++++++console.log(899)
+++++\ No newline at end of file
 +++diff --git b/src/views/index/main.js a/src/views/index/main.js
 +++index 7787b5a..27fd11f 100644
 +++--- b/src/views/index/main.js
@@ -69,13 +84,3 @@ index e69de29..117c1c4 100644
 +++ 
 ++++console.log(899)
 +++\ No newline at end of file
-++diff --git b/src/views/index/main.js a/src/views/index/main.js
-++index 7787b5a..27fd11f 100644
-++--- b/src/views/index/main.js
-+++++ a/src/views/index/main.js
-++@@ -16,3 +16,4 @@ new Vue({
-++   render: h => h(App)
-++ }).$mount('#app')
-++ 
-+++console.log(899)
-++\ No newline at end of file
