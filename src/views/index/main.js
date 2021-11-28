@@ -16,4 +16,3 @@ new Vue({
   render: h => h(App)
 }).$mount('#app')
 
-console.log(8999)
