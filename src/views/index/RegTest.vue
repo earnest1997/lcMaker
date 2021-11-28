@@ -70,7 +70,6 @@ export default {
           reg
         } = val
         let regToBeMatch = this.reg.replace(/^\//, '').replace(/\/$/, '').replace(/\\/, '\\')
-        console.log(this.pattern.join(''))
         try {
           regToBeMatch = new RegExp(reg, this.pattern.join(''))
         } catch (err) {
@@ -112,7 +111,6 @@ export default {
     },
     drawBg(reg) {
       if (this.pattern.includes('g')) {
-        console.log(this.regTest.matchAll(reg), 'ss')
         const res = Array.from(this.regTest.matchAll(reg)).map(item => {
           let { index } = item
           const len = item[0].length
@@ -129,7 +127,6 @@ export default {
         //      const len=str.match()
         //   }
         //  }
-        console.log(this.matchedStr, 's')
       }
     },
     cleanBg() {
