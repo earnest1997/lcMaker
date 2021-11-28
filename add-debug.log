@@ -1,36 +1,41 @@
 diff --git b/add-debug.log a/add-debug.log
-index e69de29..6b6674c 100644
+index e69de29..9e3e05c 100644
 --- b/add-debug.log
 +++ a/add-debug.log
-@@ -0,0 +1,31 @@
-+diff --git b/src/views/index/RegTest.vue a/src/views/index/RegTest.vue
-+index c266c1b..d9f639d 100644
-+--- b/src/views/index/RegTest.vue
-++++ a/src/views/index/RegTest.vue
-+@@ -64,12 +64,14 @@ export default {
-+   watch: {
-+     regs: {
-+       handler(val) {
-+         // eslint-disable-next-line prefer-const
-+         const {
-+           regTest,
-+           reg
-+         } = val
-+         let regToBeMatch = this.reg.replace(/^\//, '').replace(/\/$/, '').replace(/\\/, '\\')
-+         try {
-+           regToBeMatch = new RegExp(reg, this.pattern.join(''))
-+         } catch (err) {
-+@@ -111,6 +113,7 @@ export default {
-+     },
-+     drawBg(reg) {
-+       if (this.pattern.includes('g')) {
-+         const res = Array.from(this.regTest.matchAll(reg)).map(item => {
-+           let { index } = item
-+           const len = item[0].length
-+@@ -127,6 +130,7 @@ export default {
-+         //      const len=str.match()
-+         //   }
-+         //  }
-+       }
-+     },
-+     cleanBg() {
+@@ -0,0 +1,36 @@
++diff --git b/add-debug.log a/add-debug.log
++index e69de29..6b6674c 100644
++--- b/add-debug.log
+++++ a/add-debug.log
++@@ -0,0 +1,31 @@
+++diff --git b/src/views/index/RegTest.vue a/src/views/index/RegTest.vue
+++index c266c1b..d9f639d 100644
+++--- b/src/views/index/RegTest.vue
++++++ a/src/views/index/RegTest.vue
+++@@ -64,12 +64,14 @@ export default {
+++   watch: {
+++     regs: {
+++       handler(val) {
+++         // eslint-disable-next-line prefer-const
+++         const {
+++           regTest,
+++           reg
+++         } = val
+++         let regToBeMatch = this.reg.replace(/^\//, '').replace(/\/$/, '').replace(/\\/, '\\')
+++         try {
+++           regToBeMatch = new RegExp(reg, this.pattern.join(''))
+++         } catch (err) {
+++@@ -111,6 +113,7 @@ export default {
+++     },
+++     drawBg(reg) {
+++       if (this.pattern.includes('g')) {
+++         const res = Array.from(this.regTest.matchAll(reg)).map(item => {
+++           let { index } = item
+++           const len = item[0].length
+++@@ -127,6 +130,7 @@ export default {
+++         //      const len=str.match()
+++         //   }
+++         //  }
+++       }
+++     },
+++     cleanBg() {
