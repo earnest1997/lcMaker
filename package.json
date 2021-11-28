@@ -9,7 +9,8 @@
     "build:parser": "vue-cli-service build --target lib --name form-gen-parser --dest ./src/components/parser/lib/ ./src/components/parser/index.js",
     "build:tinymce": "vue-cli-service build --target lib --name form-gen-tinymce --dest ./src/components/tinymce/lib/ ./src/components/tinymce/index.js",
     "lint": "vue-cli-service lint",
-    "dev": "vue-cli-service serve"
+    "dev": "vue-cli-service serve",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@babel/parser": "^7.7.4",
@@ -31,6 +32,7 @@
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-vue": "^6.2.2",
+    "husky": "^7.0.4",
     "sass": "^1.23.7",
     "sass-loader": "^8.0.0",
     "svg-sprite-loader": "^4.1.6",
