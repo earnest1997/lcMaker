@@ -1,5 +1,5 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-echo 'test'
+npm run lint
 sh "$(dirname "$0")/_/remove-console.sh"
