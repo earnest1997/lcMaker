@@ -1,0 +1,14 @@
+diff --git b/src/views/index/a.js a/src/views/index/a.js
+index e69de29..e3918ef 100644
+--- b/src/views/index/a.js
++++ a/src/views/index/a.js
+@@ -0,0 +1 @@
++console.log(909)
+\ No newline at end of file
+diff --git b/src/views/index/a.js-e a/src/views/index/a.js-e
+index e69de29..e3918ef 100644
+--- b/src/views/index/a.js-e
++++ a/src/views/index/a.js-e
+@@ -0,0 +1 @@
++console.log(909)
+\ No newline at end of file
