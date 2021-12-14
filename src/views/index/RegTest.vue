@@ -154,6 +154,7 @@ canvas {
 
     .text {
         position: relative;
+        text-align: right;
     }
 
     canvas {
@@ -162,7 +163,7 @@ canvas {
     }
 
     textarea {
-        width: 215px;
+        width: 227px;
         box-sizing: border-box;
         border: 1px solid #DCDFE6;
         border-radius: 4px;

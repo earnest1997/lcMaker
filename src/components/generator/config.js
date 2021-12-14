@@ -627,3 +627,13 @@ export const layoutComponents = [
     align: 'top'
   }
 ]
+
+// 业务型组件
+export const businessComponents = [
+  {
+    __config__: {
+      tagIcon: 'component',
+      label: '动态'
+    }
+  }
+]

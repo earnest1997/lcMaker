@@ -130,7 +130,7 @@ import FormDrawer from './FormDrawer'
 import JsonDrawer from './JsonDrawer'
 import RightPanel from '../RightPanel'
 import {
-  inputComponents, selectComponents, layoutComponents, formConf
+  inputComponents, selectComponents, layoutComponents, formConf, businessComponents
 } from '@/components/generator/config'
 import {
   exportDefault, beautifierConf, isNumberStr, titleCase, deepClone, isObjectObject
@@ -200,6 +200,10 @@ export default {
         {
           title: '布局型组件',
           list: layoutComponents
+        },
+        {
+          title: '业务型组件',
+          list: businessComponents
         }
       ]
     }
