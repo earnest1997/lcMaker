@@ -1,5 +1,8 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npm run lint
 sh "$(dirname "$0")/_/remove-console.sh"
+
+sh "$(dirname "$0")/_/check-todo.sh"
+
+npm run lint
