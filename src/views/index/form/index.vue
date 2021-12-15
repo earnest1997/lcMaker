@@ -103,7 +103,7 @@
               />
             </draggable>
             <div v-show="!drawingList.length" class="empty-info">
-              从左侧拖入或点选组件进行表单设计
+              从左侧拖入或点选组件进行页面设计（虚线框内为表单领域）
             </div>
           </el-form>
         </el-row>

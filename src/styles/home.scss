@@ -138,8 +138,11 @@ $lighterBlue: #409eff;
   padding: 12px 12px 15px 12px;
   box-sizing: border-box;
   & > .el-form {
+    min-height: 102px;
+    border: 1px dashed #606266;
+    border-radius: 4px;
     // 69 = 12+15+42
-    height: calc(100vh - 69px);
+    // height: calc(100vh - 69px);
   }
 }
 .drawing-board {
