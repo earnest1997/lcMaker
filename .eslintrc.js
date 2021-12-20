@@ -3,7 +3,7 @@ module.exports = {
   env: {
     node: true
   },
-  extends: ['plugin:vue/recommended', 'eslint:recommended', 'airbnb-base'],
+  extends: ['plugin:vue/recommended', 'eslint:recommended', 'airbnb-base',"plugin:vue/essential","eslint:recommended"],
   rules: {
     'linebreak-style': 0,
     'no-console': 'off',
@@ -13,10 +13,15 @@ module.exports = {
     'import/order': 0,
     'import/extensions': 0,
     'import/no-unresolved': 0,
-    'comma-dangle': [2, 'never'],
+    'comma-dangle': 0,
     'symbol-description':'off',
     'vue/attribute-hyphenation':0,
-    semi: [2, 'never'],
+    'array-callback-return':0,
+    'prefer-const':0,
+    'no-shadow':0,
+    'no-multiple-empty-lines':0,
+    'semi': 0,
+    'key-spacing':0,
     'no-unused-expressions': 0,
     'no-plusplus': 0,
     'import/prefer-default-export': 0,

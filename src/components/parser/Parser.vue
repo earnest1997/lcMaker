@@ -22,34 +22,35 @@ const layouts = {
     let labelWidth = config.labelWidth ? `${config.labelWidth}px` : null
     if (config.showLabel === false) labelWidth = '0'
     return (
-      <el-col span={config.span}>
-        <el-form-item label-width={labelWidth} prop={scheme.__vModel__}
-          label={config.showLabel ? config.label : ''}>
-          <render conf={scheme} on={listeners} />
-        </el-form-item>
-      </el-col>
+      <el-form-item
+        label-width={labelWidth}
+        prop={scheme.__vModel__}
+        label={config.showLabel ? config.label : ''}
+      >
+        <render conf={scheme} on={listeners} />
+      </el-form-item>
     )
   },
   rowFormItem(h, scheme) {
     let child = renderChildren.apply(this, arguments)
     if (scheme.type === 'flex') {
-      child = <el-row type={scheme.type} justify={scheme.justify} align={scheme.align}>
-              {child}
-            </el-row>
-    }
-    return (
-      <el-col span={scheme.span}>
-        <el-row gutter={scheme.gutter}>
+      child = (
+        <el-row
+          type={scheme.type}
+          justify={scheme.justify}
+          align={scheme.align}
+        >
           {child}
         </el-row>
-      </el-col>
-    )
+      )
+    }
+    return <el-row gutter={scheme.gutter}>{child}</el-row>
   }
 }
 
 function renderFrom(h) {
   const { formConfCopy } = this
-
+  debugger
   return (
     <el-row gutter={formConfCopy.gutter}>
       <el-form
@@ -58,6 +59,7 @@ function renderFrom(h) {
         disabled={formConfCopy.disabled}
         label-width={`${formConfCopy.labelWidth}px`}
         ref={formConfCopy.formRef}
+        inline={formConfCopy.inline}
         // model不能直接赋值 https://github.com/vuejs/jsx/issues/49#issuecomment-472013664
         props={{ model: this[formConfCopy.formModel] }}
         rules={this[formConfCopy.formRules]}
@@ -70,12 +72,14 @@ function renderFrom(h) {
 }
 
 function formBtns(h) {
-  return <el-col>
+  return (
     <el-form-item size="large">
-      <el-button type="primary" onClick={this.submitForm}>提交</el-button>
+      <el-button type="primary" onClick={this.submitForm}>
+        提交
+      </el-button>
       <el-button onClick={this.resetForm}>重置</el-button>
     </el-form-item>
-  </el-col>
+  )
 }
 
 function renderFormItem(h, elementList) {
@@ -150,12 +154,16 @@ export default {
         const config = cur.__config__
         if (Array.isArray(config.regList)) {
           if (config.required) {
-            const required = { required: config.required, message: cur.placeholder }
+            const required = {
+              required: config.required,
+              message: cur.placeholder
+            }
             if (Array.isArray(config.defaultValue)) {
               required.type = 'array'
               required.message = `请至少选择一个${config.label}`
             }
-            required.message === undefined && (required.message = `${config.label}不能为空`)
+            required.message === undefined
+              && (required.message = `${config.label}不能为空`)
             config.regList.push(required)
           }
           rules[cur.__vModel__] = config.regList.map(item => {

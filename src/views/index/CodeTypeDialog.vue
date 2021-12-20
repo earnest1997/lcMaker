@@ -9,33 +9,33 @@
       @open="onOpen"
       @close="onClose"
     >
-      <el-row :gutter="15">
-        <el-form
-          ref="elForm"
-          :model="formData"
-          :rules="rules"
-          size="medium"
-          label-width="100px"
-        >
-          <el-col :span="24">
-            <el-form-item label="生成类型" prop="type">
-              <el-radio-group v-model="formData.type">
-                <el-radio-button
-                  v-for="(item, index) in typeOptions"
-                  :key="index"
-                  :label="item.value"
-                  :disabled="item.disabled"
-                >
-                  {{ item.label }}
-                </el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item v-if="showFileName" label="文件名" prop="fileName">
-              <el-input v-model="formData.fileName" placeholder="请输入文件名" clearable />
-            </el-form-item>
-          </el-col>
-        </el-form>
-      </el-row>
+      <el-form
+        ref="elForm"
+        :model="formData"
+        :rules="rules"
+        size="medium"
+        label-width="100px"
+      >
+        <el-form-item label="生成类型" prop="type">
+          <el-radio-group v-model="formData.type">
+            <el-radio-button
+              v-for="(item, index) in typeOptions"
+              :key="index"
+              :label="item.value"
+              :disabled="item.disabled"
+            >
+              {{ item.label }}
+            </el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item v-if="showFileName" label="文件名" prop="fileName">
+          <el-input
+            v-model="formData.fileName"
+            placeholder="请输入文件名"
+            clearable
+          />
+        </el-form-item>
+      </el-form>
 
       <div slot="footer">
         <el-button @click="close">
@@ -50,6 +50,7 @@
 </template>
 <script>
 export default {
+  name: 'CodeTypeDialog',
   inheritAttrs: false,
   props: ['showFileName'],
   data() {
@@ -59,28 +60,34 @@ export default {
         type: 'file'
       },
       rules: {
-        fileName: [{
-          required: true,
-          message: '请输入文件名',
-          trigger: 'blur'
-        }],
-        type: [{
-          required: true,
-          message: '生成类型不能为空',
-          trigger: 'change'
-        }]
+        fileName: [
+          {
+            required: true,
+            message: '请输入文件名',
+            trigger: 'blur'
+          }
+        ],
+        type: [
+          {
+            required: true,
+            message: '生成类型不能为空',
+            trigger: 'change'
+          }
+        ]
       },
-      typeOptions: [{
-        label: '页面',
-        value: 'file'
-      }, {
-        label: '弹窗',
-        value: 'dialog'
-      }]
+      typeOptions: [
+        {
+          label: '页面',
+          value: 'file'
+        },
+        {
+          label: '弹窗',
+          value: 'dialog'
+        }
+      ]
     }
   },
-  computed: {
-  },
+  computed: {},
   watch: {},
   mounted() {},
   methods: {
@@ -89,9 +96,9 @@ export default {
         this.formData.fileName = `${+new Date()}.vue`
       }
     },
-    onClose() {
-    },
+    onClose() {},
     close(e) {
+      // TODO: 待办1
       this.$emit('update:visible', false)
     },
     handelConfirm() {
@@ -105,6 +112,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>
