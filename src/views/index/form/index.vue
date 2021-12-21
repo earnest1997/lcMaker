@@ -23,7 +23,7 @@
             <draggable
               class="components-draggable"
               :list="item.list"
-              :group="{ name: 'componentsGroup', pull: 'clone', put: false }"
+              :group="{ name: item.groupName || 'formComponentsGroup', pull: 'clone', put: false }"
               :clone="cloneComponent"
               draggable=".components-item"
               :sort="false"
@@ -85,14 +85,15 @@
             :labelWidth="formConf.labelWidth + 'px'"
           >
             <draggable
-              class="drawing-board"
+              class="drawing-board top"
               :list="drawingList"
               :animation="340"
-              group="componentsGroup"
+              group="formComponentsGroup"
             >
-              <draggable-item
+              <FormDragItem
                 v-for="(item, index) in drawingList"
                 :key="item.renderKey"
+                group="formComponentsGroup"
                 :drawingList="drawingList"
                 :currentItem="item"
                 :index="index"
@@ -110,10 +111,24 @@
         </el-row>
       </el-scrollbar>
       <el-scrollbar>
-        <draggable class="drawing-board" :animation="340" @move="onMoveContainer" />
-        <div v-show="!drawingTable" class="empty-info">
-          从左侧拖入表格组件（非必选）
-        </div>
+        <draggable class="drawing-board bottom" :animation="340" :list="drawingContainer" group="containerGroup" @move="onMoveContainer">
+          <NormalDragItem
+            v-for="(item, index) in drawingContainer"
+            :key="item.renderKey"
+            :group="drawingContainer"
+            :drawingList="drawingContainer"
+            :currentItem="item"
+            :index="index"
+            :activeId="activeId"
+            :formConf="formConf"
+            @activeItem="activeFormItem"
+            @copyItem="drawingItemCopy"
+            @deleteItem="drawingItemDelete"
+          />
+          <div v-show="!drawingContainer.length" class="empty-info">
+            从左侧拖入表格组件（非必选）
+          </div>
+        </draggable>
       </el-scrollbar>
     </div>
 
@@ -181,7 +196,8 @@ import { makeUpCss } from '@/components/generator/css'
 import drawingDefalut from '@/components/generator/drawingDefalut'
 import logo from '@/assets/logo.png'
 import CodeTypeDialog from '../CodeTypeDialog'
-import DraggableItem from '../DraggableItem'
+import FormDragItem from '../dragItem/formItem'
+import NormalDragItem from '../dragItem/normalItem'
 import {
   getDrawingList,
   saveDrawingList,
@@ -208,7 +224,8 @@ export default {
     JsonDrawer,
     RightPanel,
     CodeTypeDialog,
-    DraggableItem
+    FormDragItem,
+    NormalDragItem
   },
   data() {
     return {
@@ -221,7 +238,7 @@ export default {
       labelWidth: 100,
       drawingList: drawingDefalut,
       // 表格
-      drawingTable:null,
+      drawingContainer:[],
       drawingData: {},
       activeId: drawingDefalut[0].formId,
       drawerVisible: false,
@@ -244,6 +261,7 @@ export default {
         },
         {
           title: '布局型组件',
+          groupName:'containerGroup',
           list: layoutComponents
         },
         // {
@@ -377,7 +395,7 @@ export default {
     onMoveForm(e, originalEvent) {
       console.log(e, originalEvent, 'onMove')
       // 停靠对象 如果停靠对象是A区，就拒绝掉
-      if (e.relatedContext.element.isConfig) return false
+      // if (e.relatedContext.element.isConfig) return false
 
       // 拖拽对象
       // if (e.draggedContext.element.isConfig) return false
@@ -386,7 +404,7 @@ export default {
     onMoveContainer(e, originalEvent) {
       console.log(e, originalEvent, 'onMove')
       // 停靠对象 如果停靠对象是A区，就拒绝掉
-      if (e.relatedContext.element.isConfig) return false
+      // if (e.relatedContext.element.isConfig) return false
 
       // 拖拽对象
       // if (e.draggedContext.element.isConfig) return false

@@ -524,6 +524,9 @@ export const selectComponents = [
 ]
 
 // 布局型组件 【左面板】
+const commonLayoutProps = {
+  isContainerComp:true
+}
 export const layoutComponents = [
   {
     __config__: {
@@ -536,7 +539,7 @@ export const layoutComponents = [
     },
     type: 'default',
     justify: 'start',
-    align: 'top'
+    align: 'top',
   },
   {
     __config__: {
@@ -648,7 +651,7 @@ export const layoutComponents = [
     justify: 'start',
     align: 'top'
   }
-]
+].map(item => ({ ...item, ...commonLayoutProps }))
 
 // 业务型组件
 export const businessComponents = [
