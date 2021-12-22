@@ -157,6 +157,7 @@ export default {
     },
     onOpen() {
       const { type } = this.generateConf
+      // TODO 看看formdata是啥
       this.htmlCode = makeUpHtml(this.formData, type)
       this.jsCode = makeUpJs(this.formData, type)
       this.cssCode = makeUpCss(this.formData)

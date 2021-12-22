@@ -50,7 +50,7 @@ const layouts = {
 
 function renderFrom(h) {
   const { formConfCopy } = this
-  debugger
+  
   return (
     <el-row gutter={formConfCopy.gutter}>
       <el-form

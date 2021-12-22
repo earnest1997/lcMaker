@@ -1,8 +1,14 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+. "$(dirname "$0")/scripts/husky.sh"
 
-sh "$(dirname "$0")/_/remove-console.sh"
+sh "$(dirname "$0")/scripts/remove-console.sh"
+sh "$(dirname "$0")/scripts/check-todo.sh"
+# 开启子shell处理 防止中断提交
+npm run lint-new &
 
-sh "$(dirname "$0")/_/check-todo.sh"
+wait 
+# # commit_msg=
+# echo "$1"
 
-npm run lint
+# echo "$?"
+

@@ -611,6 +611,53 @@
             </div>
             <el-divider />
           </template>
+          <template v-if="(activeData.__config__.tag || '').includes('el-table')">
+            <el-divider>表单项</el-divider>
+            <draggable
+              :list="activeData.__slot__.columns"
+              :animation="340"
+              group="selectItem"
+              handle=".option-drag"
+            >
+              <div
+                v-for="(item, index) in activeData.__slot__.columns"
+                :key="index"
+                class="select-item"
+              >
+                <div class="select-line-icon option-drag">
+                  <i class="el-icon-s-operation" />
+                </div>
+                <el-input
+                  v-model="item.label"
+                  placeholder="label"
+                  size="small"
+                />
+                <el-input
+                  placeholder="prop"
+                  size="small"
+                  :value="item.value"
+                  @input="setOptionValue(item, $event)"
+                />
+                <el-input v-model="item.width" placeholder="表格宽度" />
+                <div
+                  class="close-btn select-line-icon"
+                  @click="activeData.__slot__.columns.splice(index, 1)"
+                >
+                  <i class="el-icon-remove-outline" />
+                </div>
+              </div>
+            </draggable>
+            <div style="margin-left: 20px">
+              <el-button
+                style="padding-bottom: 0"
+                icon="el-icon-circle-plus-outline"
+                type="text"
+                @click="addTableItem"
+              >
+                添加表格项
+              </el-button>
+            </div>
+          </template>
 
           <template
             v-if="
@@ -1265,6 +1312,13 @@ export default {
       this.activeData.__slot__.options.push({
         label: '',
         value: ''
+      })
+    },
+    addTableItem() {
+      this.activeData.__slot__.columns.push({
+        label: '',
+        prop: '',
+        width:'unset'
       })
     },
     addTreeItem() {

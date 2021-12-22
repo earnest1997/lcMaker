@@ -198,7 +198,7 @@ export const selectComponents = [
       tagIcon: 'cascader',
       layout: 'colFormItem',
       defaultValue: [],
-      dataType: 'dynamic',
+      // dataType: 'dynamic',
       span: 24,
       required: true,
       regList: [],
@@ -578,38 +578,59 @@ export const layoutComponents = [
       changeTag: true,
       labelWidth: null,
       label: '表格[开发中]',
-      dataType: 'dynamic',
+      // dataType: 'dynamic',
       method: 'get',
       dataPath: 'list',
       dataConsumer: 'data',
       url: 'https://www.fastmock.site/mock/f8d7a54fb1e60561e2f720d5a810009d/fg/tableData',
       children: [
+        // {
+        //   __config__: {
+        //     layout: 'raw',
+        //     tag: 'el-table-column',
+        //     renderKey: 15957617660153
+        //   },
+        //   prop: 'id',
+        //   label: 'ID'
+        // },
+        // {
+        //   __config__: {
+        //     layout: 'raw',
+        //     tag: 'el-table-column',
+        //     renderKey: 1595774496335,
+        //     children: [
+        //       {
+        //         __config__: {
+        //           label: '按钮',
+        //           tag: 'el-button',
+        //           tagIcon: 'button',
+        //           layout: 'raw',
+        //           renderKey: 1595779809901
+        //         },
+        //         __slot__: {
+        //           default: '主要按钮'
+        //         },
+        //         type: 'primary',
+        //         icon: 'el-icon-search',
+        //         round: false,
+        //         size: 'medium'
+        //       }
+        //     ]
+        //   },
+        //   label: '操作'
+        // }
+      ],
+    },
+    __slot__: {
+      columns:[
         {
           __config__: {
             layout: 'raw',
             tag: 'el-table-column',
             renderKey: 15957617660153
           },
-          prop: 'date',
-          label: '日期'
-        },
-        {
-          __config__: {
-            layout: 'raw',
-            tag: 'el-table-column',
-            renderKey: 15957617660152
-          },
-          prop: 'address',
-          label: '地址'
-        },
-        {
-          __config__: {
-            layout: 'raw',
-            tag: 'el-table-column',
-            renderKey: 15957617660151
-          },
-          prop: 'name',
-          label: '名称'
+          prop: 'id',
+          label: 'ID'
         },
         {
           __config__: {
@@ -642,8 +663,8 @@ export const layoutComponents = [
     data: [],
     directives: [
       {
-        name: 'loading',
-        value: true
+        // name: 'loading',
+        // value: true
       }
     ],
     border: true,

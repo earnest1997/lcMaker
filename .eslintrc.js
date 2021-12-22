@@ -30,6 +30,7 @@ module.exports = {
     'no-underscore-dangle': 0,
     'arrow-parens': [2, 'as-needed'],
     'vue/max-attributes-per-line': 0,
+    'no-trailing-spaces':0,
     'max-len': [
       1,
       {

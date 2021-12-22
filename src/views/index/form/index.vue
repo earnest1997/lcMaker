@@ -21,6 +21,7 @@
               {{ item.title }}
             </div>
             <draggable
+
               class="components-draggable"
               :list="item.list"
               :group="{ name: item.groupName || 'formComponentsGroup', pull: 'clone', put: false }"
@@ -111,7 +112,11 @@
         </el-row>
       </el-scrollbar>
       <el-scrollbar>
-        <draggable class="drawing-board bottom" :animation="340" :list="drawingContainer" group="containerGroup" @move="onMoveContainer">
+        <draggable class="drawing-board bottom" :animation="340"
+                   :list="drawingContainer"
+                   group="containerGroup"
+                   @move="onMoveContainer"
+        >
           <NormalDragItem
             v-for="(item, index) in drawingContainer"
             :key="item.renderKey"

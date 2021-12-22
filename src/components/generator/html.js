@@ -348,7 +348,7 @@ function attrBuilder(el) {
   }
 }
 
-// el-buttin 子级
+// el-button 子级
 function buildElButtonChild(scheme) {
   const children = []
   const slot = scheme.__slot__ || {}
@@ -358,6 +358,17 @@ function buildElButtonChild(scheme) {
   return children.join('\n')
 }
 
+// el-table子级别
+function buildElTableChild(scheme) {
+  const children = []
+  const slot = scheme.__slot__
+  if (slot && slot.columns && slot.columns.length) {
+    children.push(
+      `<el-table-column v-for="({label,prop,width}, index) in ${scheme.__vModel__}Options" :key="index" :label="label" :prop="item.prop" :width="item.width"></el-table-column>`
+    )
+  }
+  return children.join('\n')
+}
 // el-input 子级
 function buildElInputChild(scheme) {
   const children = []
@@ -436,7 +447,7 @@ function buildElUploadChild(scheme) {
  * @param {Object} formConfig 整个表单配置
  * @param {String} type 生成类型，文件或弹窗等
  */
-export function makeUpHtml(formConfig, type) {
+export function makeUpFormHtml(formConfig, type) {
   const htmlList = []
   confGlobal = formConfig
   // 判断布局是否都沾满了24个栅格，以备后续简化代码结构
@@ -454,4 +465,30 @@ export function makeUpHtml(formConfig, type) {
   }
   confGlobal = null
   return temp
+}
+
+export function makeUpContainerHtml(formConfig, type) {
+  const htmlList = []
+  confGlobal = formConfig
+  // 判断布局是否都沾满了24个栅格，以备后续简化代码结构
+  someSpanIsNot24 = formConfig.fields.some(item => item.__config__.span !== 24)
+  // 遍历渲染每个组件成html
+  formConfig.fields.forEach(el => {
+    htmlList.push(layouts[el.__config__.layout](el))
+  })
+  const htmlStr = htmlList.join('\n')
+  // 将组件代码放进form标签
+  let temp = buildFormTemplate(formConfig, htmlStr, type)
+  // dialog标签包裹代码
+  if (type === 'dialog') {
+    temp = dialogWrapper(temp)
+  }
+  confGlobal = null
+  return temp
+}
+
+export function makeUpHtml(...arg) {
+  const formHtml = makeUpFormHtml(...arg)
+  const containerHtml = makeUpContainerHtml(...arg)
+  return `${formHtml}${containerHtml}`
 }
