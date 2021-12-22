@@ -18,7 +18,7 @@
         <el-form
           v-show="currentTab === 'field' && showField"
           size="small"
-          label-width="90px"
+          label-width="120px"
         >
           <el-form-item v-if="activeData.__config__.changeTag" label="组件类型">
             <el-select
@@ -611,8 +611,9 @@
             </div>
             <el-divider />
           </template>
+          <!-- 表格属性 -->
           <template v-if="(activeData.__config__.tag || '').includes('el-table')">
-            <el-divider>表单项</el-divider>
+            <el-divider>表格项</el-divider>
             <draggable
               :list="activeData.__slot__.columns"
               :animation="340"
@@ -638,7 +639,7 @@
                   :value="item.value"
                   @input="setOptionValue(item, $event)"
                 />
-                <el-input v-model="item.width" placeholder="表格宽度" />
+                <el-input v-model="item.width" placeholder="表格宽度" size="small" />
                 <div
                   class="close-btn select-line-icon"
                   @click="activeData.__slot__.columns.splice(index, 1)"
@@ -657,6 +658,13 @@
                 添加表格项
               </el-button>
             </div>
+
+            <el-form-item label="是否分页">
+              <el-switch v-model="activeData.__config__.isShowPagination" />
+            </el-form-item>
+            <el-form-item v-show="activeData.__config__.isShowPagination" label="分页条数">
+              <el-input-number v-model="activeData.__config__.pageSize" />
+            </el-form-item>
           </template>
 
           <template

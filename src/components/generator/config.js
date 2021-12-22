@@ -543,6 +543,20 @@ export const layoutComponents = [
   },
   {
     __config__: {
+      layout: 'rowFormItem',
+      tagIcon: 'pagination',
+      label: '分页',
+      tag:'el-pagination',
+      document:
+        'https://element.eleme.cn/#/zh-CN/component/layout#row-attributes'
+    },
+    type: 'default',
+    justify: 'start',
+    align: 'top',
+    layout:'total, prev, pager, next, sizes'
+  },
+  {
+    __config__: {
       label: '按钮',
       showLabel: true,
       changeTag: true,
@@ -582,6 +596,8 @@ export const layoutComponents = [
       method: 'get',
       dataPath: 'list',
       dataConsumer: 'data',
+      isShowPagination:true,
+      pageSize:20,
       url: 'https://www.fastmock.site/mock/f8d7a54fb1e60561e2f720d5a810009d/fg/tableData',
       children: [
         // {
