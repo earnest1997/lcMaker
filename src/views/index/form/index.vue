@@ -143,18 +143,19 @@
       :showField="!!drawingList.length"
       @tag-change="tagChange"
       @fetch-data="fetchData"
+      @set-search="addComponent"
     />
 
     <form-drawer
       :visible.sync="drawerVisible"
-      :formData="formData"
+      :formData="pageData.formData"
       size="100%"
       :generateConf="generateConf"
     />
     <json-drawer
       size="60%"
       :visible.sync="jsonDrawerVisible"
-      :jsonStr="JSON.stringify(formData)"
+      :jsonStr="JSON.stringify(pageData.formData)"
       @refresh="refreshJson"
     />
     <code-type-dialog
@@ -247,7 +248,10 @@ export default {
       drawingData: {},
       activeId: drawingDefalut[0].formId,
       drawerVisible: false,
-      formData: {},
+      pageData:{
+        formData: {},
+        containerData:{}
+      },
       dialogVisible: false,
       jsonDrawerVisible: false,
       generateConf: null,
@@ -435,7 +439,7 @@ export default {
       config.formId = ++this.idGlobal
       config.renderKey = `${config.formId}${+new Date()}` // 改变renderKey后可以实现强制更新组件
       if (config.layout === 'colFormItem') {
-        item.__vModel__ = `field${this.idGlobal}`
+        item.__vFormModel__ = `field${this.idGlobal}`
       } else if (config.layout === 'rowFormItem') {
         config.componentName = `row${this.idGlobal}`
         !Array.isArray(config.children) && (config.children = [])
@@ -446,10 +450,13 @@ export default {
       }
       return item
     },
-    AssembleFormData() {
-      this.formData = {
-        fields: deepClone(this.drawingList),
-        ...this.formConf
+    AssemblePageData() {
+      this.pageData = {
+        formData:{
+          fields: deepClone(this.drawingList),
+          ...this.formConf
+        },
+        containerData:deepClone(this.drawingContainer)
       }
     },
     generate(data) {
@@ -458,7 +465,7 @@ export default {
       func && func(data)
     },
     execRun(data) {
-      this.AssembleFormData()
+      this.AssemblePageData()
       this.drawerVisible = true
     },
     execDownload(data) {
@@ -494,14 +501,14 @@ export default {
     },
     generateCode() {
       const { type } = this.generateConf
-      this.AssembleFormData()
-      const script = vueScript(makeUpJs(this.formData, type))
-      const html = vueTemplate(makeUpHtml(this.formData, type))
-      const css = cssStyle(makeUpCss(this.formData))
+      this.AssemblePageData()
+      const script = vueScript(makeUpJs(this.pageData, type))
+      const html = vueTemplate(makeUpHtml(this.pageData, type))
+      const css = cssStyle(makeUpCss(this.pageData))
       return beautifier.html(html + script + css, beautifierConf.html)
     },
     showJson() {
-      this.AssembleFormData()
+      this.AssemblePageData()
       this.jsonDrawerVisible = true
     },
     download() {
@@ -522,7 +529,7 @@ export default {
     tagChange(newTag) {
       newTag = this.cloneComponent(newTag)
       const config = newTag.__config__
-      newTag.__vModel__ = this.activeData.__vModel__
+      newTag.__vFormModel__ = this.activeData.__vFormModel__
       config.formId = this.activeId
       config.span = this.activeData.__config__.span
       this.activeData.__config__.tag = config.tag

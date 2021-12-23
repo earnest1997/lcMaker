@@ -24,7 +24,7 @@ const layouts = {
     return (
       <el-form-item
         label-width={labelWidth}
-        prop={scheme.__vModel__}
+        prop={scheme.__vFormModel__}
         label={config.showLabel ? config.label : ''}
       >
         <render conf={scheme} on={listeners} />
@@ -102,7 +102,7 @@ function renderChildren(h, scheme) {
 
 function setValue(event, config, scheme) {
   this.$set(config, 'defaultValue', event)
-  this.$set(this[this.formConf.formModel], scheme.__vModel__, event)
+  this.$set(this[this.formConf.formModel], scheme.__vFormModel__, event)
 }
 
 function buildListeners(scheme) {
@@ -145,7 +145,7 @@ export default {
     initFormData(componentList, formData) {
       componentList.forEach(cur => {
         const config = cur.__config__
-        if (cur.__vModel__) formData[cur.__vModel__] = config.defaultValue
+        if (cur.__vFormModel__) formData[cur.__vFormModel__] = config.defaultValue
         if (config.children) this.initFormData(config.children, formData)
       })
     },
@@ -166,7 +166,7 @@ export default {
               && (required.message = `${config.label}不能为空`)
             config.regList.push(required)
           }
-          rules[cur.__vModel__] = config.regList.map(item => {
+          rules[cur.__vFormModel__] = config.regList.map(item => {
             item.pattern && (item.pattern = eval(item.pattern))
             item.trigger = ruleTrigger && ruleTrigger[config.tag]
             return item

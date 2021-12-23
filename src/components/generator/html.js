@@ -33,6 +33,11 @@ export function cssStyle(cssStr) {
     ${cssStr}
   </style>`
 }
+function buildPageTemplate() {
+
+}
+
+function buildContainerTemplate() {}
 
 function buildFormTemplate(scheme, child, type) {
   let labelPosition = ''
@@ -96,7 +101,7 @@ const layouts = {
     }
     const required = !ruleTrigger[config.tag] && config.required ? 'required' : ''
     const tagDom = tags[config.tag] ? tags[config.tag](scheme) : null
-    let str = `<el-form-item ${labelWidth} ${label} prop="${scheme.__vModel__}" ${required}>
+    let str = `<el-form-item ${labelWidth} ${label} prop="${scheme.__vFormModel__}" ${required}>
         ${tagDom}
       </el-form-item>`
     str = colWrapper(scheme, str)
@@ -114,10 +119,35 @@ const layouts = {
     </el-row>`
     str = colWrapper(scheme, str)
     return str
+  },
+  raw(scheme) {
+    const config = scheme.__config__
+    const children = config.children.map(el => layouts[el.__config__.layout](el))
+    const tagDom = tags[config.tag] ? tags[config.tag](scheme) : null
+    return tagDom
   }
 }
 
+function generateProps(props) {
+  return Object.entries(props).reduce((prev, current) => {
+    const [key, val] = current
+    if (!val || typeof val === 'object') return prev
+    const prop = typeof val === 'boolean' ? key : `${key}="${val}"`
+    return `${prev} ${prop}`
+  }, '')
+}
+
 const tags = {
+  'el-table':el => {
+    const { tag } = attrBuilder(el)
+    const {
+      __config__, __slot__, __vModel__, directives, ...tableOriginProps 
+    } = el
+    let child = buildElTableChild(el)
+    if (child) child = `\n${child}\n` // 换行
+    const props = generateProps({ ...tableOriginProps, data:'tableData' })
+    return `<${tag} ${props}>${child}</${tag}>`
+  },
   'el-button': el => {
     const { tag, disabled } = attrBuilder(el)
     const type = el.type ? `type="${el.type}"` : ''
@@ -225,8 +255,8 @@ const tags = {
     const {
       tag, disabled, vModel, clearable, placeholder, width
     } = attrBuilder(el)
-    const options = el.options ? `:options="${el.__vModel__}Options"` : ''
-    const props = el.props ? `:props="${el.__vModel__}Props"` : ''
+    const options = el.options ? `:options="${el.__vFormModel__}Options"` : ''
+    const props = el.props ? `:props="${el.__vFormModel__}Props"` : ''
     const showAllLevels = el['show-all-levels']
       ? ''
       : ':show-all-levels="false"'
@@ -315,15 +345,15 @@ const tags = {
   'el-upload': el => {
     const { tag } = el.__config__
     const disabled = el.disabled ? ":disabled='true'" : ''
-    const action = el.action ? `:action="${el.__vModel__}Action"` : ''
+    const action = el.action ? `:action="${el.__vFormModel__}Action"` : ''
     const multiple = el.multiple ? 'multiple' : ''
     const listType = el['list-type'] !== 'text' ? `list-type="${el['list-type']}"` : ''
     const accept = el.accept ? `accept="${el.accept}"` : ''
     const name = el.name !== 'file' ? `name="${el.name}"` : ''
     const autoUpload = el['auto-upload'] === false ? ':auto-upload="false"' : ''
-    const beforeUpload = `:before-upload="${el.__vModel__}BeforeUpload"`
-    const fileList = `:file-list="${el.__vModel__}fileList"`
-    const ref = `ref="${el.__vModel__}"`
+    const beforeUpload = `:before-upload="${el.__vFormModel__}BeforeUpload"`
+    const fileList = `:file-list="${el.__vFormModel__}fileList"`
+    const ref = `ref="${el.__vFormModel__}"`
     let child = buildElUploadChild(el)
 
     if (child) child = `\n${child}\n` // 换行
@@ -340,7 +370,7 @@ const tags = {
 function attrBuilder(el) {
   return {
     tag: el.__config__.tag,
-    vModel: `v-model="${confGlobal.formModel}.${el.__vModel__}"`,
+    vModel: `v-model="${confGlobal?.formModel}.${el.__vFormModel__}"`,
     clearable: el.clearable ? 'clearable' : '',
     placeholder: el.placeholder ? `placeholder="${el.placeholder}"` : '',
     width: el.style && el.style.width ? ':style="{width: \'100%\'}"' : '',
@@ -360,12 +390,12 @@ function buildElButtonChild(scheme) {
 
 // el-table子级别
 function buildElTableChild(scheme) {
-  const children = []
+  let children = []
   const slot = scheme.__slot__
   if (slot && slot.columns && slot.columns.length) {
-    children.push(
-      `<el-table-column v-for="({label,prop,width}, index) in ${scheme.__vModel__}Options" :key="index" :label="label" :prop="item.prop" :width="item.width"></el-table-column>`
-    )
+    children = (scheme.__slot__.columns).map(({ label, prop, width }) => (
+      `<el-table-column label="${label}" ${prop ? `prop="${prop}"` : ''} ${width ? `width="${width}"` : ''}></el-table-column>`
+    ))
   }
   return children.join('\n')
 }
@@ -388,7 +418,7 @@ function buildElSelectChild(scheme) {
   const slot = scheme.__slot__
   if (slot && slot.options && slot.options.length) {
     children.push(
-      `<el-option v-for="(item, index) in ${scheme.__vModel__}Options" :key="index" :label="item.label" :value="item.value" :disabled="item.disabled"></el-option>`
+      `<el-option v-for="(item, index) in ${scheme.__vFormModel__}Options" :key="index" :label="item.label" :value="item.value" :disabled="item.disabled"></el-option>`
     )
   }
   return children.join('\n')
@@ -403,7 +433,7 @@ function buildElRadioGroupChild(scheme) {
     const tag = config.optionType === 'button' ? 'el-radio-button' : 'el-radio'
     const border = config.border ? 'border' : ''
     children.push(
-      `<${tag} v-for="(item, index) in ${scheme.__vModel__}Options" :key="index" :label="item.value" :disabled="item.disabled" ${border}>{{item.label}}</${tag}>`
+      `<${tag} v-for="(item, index) in ${scheme.__vFormModel__}Options" :key="index" :label="item.value" :disabled="item.disabled" ${border}>{{item.label}}</${tag}>`
     )
   }
   return children.join('\n')
@@ -418,7 +448,7 @@ function buildElCheckboxGroupChild(scheme) {
     const tag = config.optionType === 'button' ? 'el-checkbox-button' : 'el-checkbox'
     const border = config.border ? 'border' : ''
     children.push(
-      `<${tag} v-for="(item, index) in ${scheme.__vModel__}Options" :key="index" :label="item.value" :disabled="item.disabled" ${border}>{{item.label}}</${tag}>`
+      `<${tag} v-for="(item, index) in ${scheme.__vFormModel__}Options" :key="index" :label="item.value" :disabled="item.disabled" ${border}>{{item.label}}</${tag}>`
     )
   }
   return children.join('\n')
@@ -460,35 +490,32 @@ export function makeUpFormHtml(formConfig, type) {
   // 将组件代码放进form标签
   let temp = buildFormTemplate(formConfig, htmlStr, type)
   // dialog标签包裹代码
-  if (type === 'dialog') {
-    temp = dialogWrapper(temp)
-  }
   confGlobal = null
   return temp
 }
 
-export function makeUpContainerHtml(formConfig, type) {
+export function makeUpContainerHtml(containerData, type) {
   const htmlList = []
-  confGlobal = formConfig
-  // 判断布局是否都沾满了24个栅格，以备后续简化代码结构
-  someSpanIsNot24 = formConfig.fields.some(item => item.__config__.span !== 24)
   // 遍历渲染每个组件成html
-  formConfig.fields.forEach(el => {
+  containerData.forEach(el => {
     htmlList.push(layouts[el.__config__.layout](el))
   })
   const htmlStr = htmlList.join('\n')
   // 将组件代码放进form标签
-  let temp = buildFormTemplate(formConfig, htmlStr, type)
+  // let temp = buildContainerTemplate(formConfig, htmlStr, type)
   // dialog标签包裹代码
+  // return temp
+  return htmlStr
+}
+
+export function makeUpHtml(fieldData, type) {
+  const { formData, containerData } = fieldData
+  const formHtml = makeUpFormHtml(formData)
+  const containerHtml = makeUpContainerHtml(containerData)
+  let temp = `${formHtml}${containerHtml}`
+  // let temp = buildPageTemplate(formHtml, containerHtml)
   if (type === 'dialog') {
     temp = dialogWrapper(temp)
   }
-  confGlobal = null
   return temp
-}
-
-export function makeUpHtml(...arg) {
-  const formHtml = makeUpFormHtml(...arg)
-  const containerHtml = makeUpContainerHtml(...arg)
-  return `${formHtml}${containerHtml}`
 }

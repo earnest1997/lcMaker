@@ -23,7 +23,7 @@ export default [
       prepend: '',
       append: ''
     },
-    __vModel__: 'mobile',
+    __vFormModel__: 'mobile',
     placeholder: '请输入手机号',
     style: { width: '100%' },
     clearable: true,

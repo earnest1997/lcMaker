@@ -62,44 +62,9 @@ const layouts = {
           </div>
     )
   },
-  rowFormItem(h, currentItem, index, list) {
-    const { activeItem } = this.$listeners
-    const config = currentItem.__config__
-    const className = this.activeId === config.formId
-      ? 'drawing-row-item active-from-item'
-      : 'drawing-row-item'
-    let child = renderChildren.apply(this, arguments)
-    if (currentItem.type === 'flex') {
-      child = (
-            <el-row
-              type={currentItem.type}
-              justify={currentItem.justify}
-              align={currentItem.align}
-            >
-              {child}
-            </el-row>
-      )
-    }
-    return (
-          <div onClick={event => {
-            activeItem(currentItem)
-            event.stopPropagation()
-          }}><span class="component-name">{config.componentName}</span>
-          {this.group}
-            <draggable
-              list={config.children || []}
-              animation={340}
-              group={this.group}
-              class="drag-wrapper"
-            >
-              {child}
-            </draggable>
-            {components.itemBtns.apply(this, arguments)}
-          </div>
-    )
-  },
   raw(h, currentItem, index, list) {
     const config = currentItem.__config__
+    
     const child = renderChildren.apply(this, arguments)
     return (
           <render

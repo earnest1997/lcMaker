@@ -1,6 +1,6 @@
-import { isArray } from 'util'
 import { exportDefault, titleCase, deepClone } from '@/utils/index'
-import ruleTrigger from './ruleTrigger'
+import ruleTrigger from '../ruleTrigger'
+import { getPageMethods, getCompMethods } from './methods'
 
 const units = {
   KB: '1024',
@@ -15,11 +15,15 @@ const inheritAttrs = {
 
 /**
  * 组装js 【入口函数】
- * @param {Object} formConfig 整个表单配置
+ * @param {Object} pageConfig 整个页面配置
  * @param {String} type 生成类型，文件或弹窗等
  */
-export function makeUpJs(formConfig, type) {
-  confGlobal = formConfig = deepClone(formConfig)
+export function makeUpJs(pageConfig, type) {
+  const { formData:{ fields, ...formConf }, containerData } = pageConfig
+  const pageData = [...fields, ...containerData]
+  
+  confGlobal = deepClone(formConf)
+  const formDataList = []
   const dataList = []
   const ruleList = []
   const optionsList = []
@@ -28,13 +32,17 @@ export function makeUpJs(formConfig, type) {
   const uploadVarList = []
   const created = []
 
-  formConfig.fields.forEach(el => {
-    buildAttributes(el, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created)
+  const params = {
+    formDataList, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created 
+  }
+  pageData.forEach(el => {
+    buildAttributes({ el, ...params })
   })
-
+  // 
   const script = buildexport(
-    formConfig,
+    pageConfig,
     type,
+    formDataList.join('\n'),
     dataList.join('\n'),
     ruleList.join('\n'),
     optionsList.join('\n'),
@@ -47,18 +55,32 @@ export function makeUpJs(formConfig, type) {
   return script
 }
 
+function buildCompMethods(scheme, methodList) {
+  const { __config__:{ tag } } = scheme
+  const methods = getCompMethods(tag)
+  if (methods) {
+    methodList = [...methods, ...methodList]
+  }
+}
+
 // 构建组件属性
-function buildAttributes(scheme, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created) {
+function buildAttributes(params) {
+  const {
+    el:scheme, formDataList, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created 
+  } = params
   const config = scheme.__config__
   const slot = scheme.__slot__
-  buildData(scheme, dataList)
+  buildData(scheme, formDataList, dataList)
   buildRules(scheme, ruleList)
+
+  // 为组件绑定自己的方法
+  buildCompMethods(scheme, methodList)
 
   // 特殊处理options属性
   if (scheme.options || (slot && slot.options && slot.options.length)) {
     buildOptions(scheme, optionsList)
     if (config.dataType === 'dynamic') {
-      const model = `${scheme.__vModel__}Options`
+      const model = `${scheme.__vFormModel__}Options`
       const options = titleCase(model)
       const methodName = `get${options}`
       buildOptionMethod(methodName, model, methodList, scheme)
@@ -74,8 +96,8 @@ function buildAttributes(scheme, dataList, ruleList, optionsList, methodList, pr
   // 处理el-upload的action
   if (scheme.action && config.tag === 'el-upload') {
     uploadVarList.push(
-      `${scheme.__vModel__}Action: '${scheme.action}',
-      ${scheme.__vModel__}fileList: [],`
+      `${scheme.__vFormModel__}Action: '${scheme.action}',
+      ${scheme.__vFormModel__}fileList: [],`
     )
     methodList.push(buildBeforeUpload(scheme))
     // 非自动上传时，生成手动上传的函数
@@ -87,7 +109,7 @@ function buildAttributes(scheme, dataList, ruleList, optionsList, methodList, pr
   // 构建子级组件属性
   if (config.children) {
     config.children.forEach(item => {
-      buildAttributes(item, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created)
+      buildAttributes(item, formDataList, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created)
     })
   }
 }
@@ -99,36 +121,8 @@ function callInCreated(methodName, created) {
 
 // 混入处理函数
 function mixinMethod(type) {
-  const list = []; const
-    minxins = {
-      file: confGlobal.formBtns ? {
-        submitForm: `submitForm() {
-        this.$refs['${confGlobal.formRef}'].validate(valid => {
-          if(!valid) return
-          // TODO 提交表单
-        })
-      },`,
-        resetForm: `resetForm() {
-        this.$refs['${confGlobal.formRef}'].resetFields()
-      },`
-      } : null,
-      dialog: {
-        onOpen: 'onOpen() {},',
-        onClose: `onClose() {
-        this.$refs['${confGlobal.formRef}'].resetFields()
-      },`,
-        close: `close() {
-        this.$emit('update:visible', false)
-      },`,
-        handelConfirm: `handelConfirm() {
-        this.$refs['${confGlobal.formRef}'].validate(valid => {
-          if(!valid) return
-          this.close()
-        })
-      },`
-      }
-    }
-
+  const list = [];
+  const minxins = getPageMethods(confGlobal)
   const methods = minxins[type]
   if (methods) {
     Object.keys(methods).forEach(key => {
@@ -140,26 +134,33 @@ function mixinMethod(type) {
 }
 
 // 构建data
-function buildData(scheme, dataList) {
+function buildData(scheme, formDataList, dataList) {
   const config = scheme.__config__
-  if (scheme.__vModel__ === undefined) return
+  const modelName = scheme.__vFormModel__ || scheme.__vModel__
+  const isFormData = '__vFormModel__' in scheme
+  
+  if (!modelName) return
   const defaultValue = JSON.stringify(config.defaultValue)
-  dataList.push(`${scheme.__vModel__}: ${defaultValue},`)
+  if (isFormData) {
+    formDataList.push(`${modelName}: ${defaultValue},`)
+  } else {
+    dataList.push(`${modelName}: ${defaultValue},`)
+  }
 }
 
 // 构建校验规则
 function buildRules(scheme, ruleList) {
   const config = scheme.__config__
-  if (scheme.__vModel__ === undefined) return
+  if (scheme.__vFormModel__ === undefined) return
   const rules = []
   if (ruleTrigger[config.tag]) {
     if (config.required) {
-      const type = isArray(config.defaultValue) ? 'type: \'array\',' : ''
-      let message = isArray(config.defaultValue) ? `请至少选择一个${config.label}` : scheme.placeholder
+      const type = Array.isArray(config.defaultValue) ? 'type: \'array\',' : ''
+      let message = Array.isArray(config.defaultValue) ? `请至少选择一个${config.label}` : scheme.placeholder
       if (message === undefined) message = `${config.label}不能为空`
       rules.push(`{ required: true, ${type} message: '${message}', trigger: '${ruleTrigger[config.tag]}' }`)
     }
-    if (config.regList && isArray(config.regList)) {
+    if (config.regList && Array.isArray(config.regList)) {
       config.regList.forEach(item => {
         if (item.pattern) {
           rules.push(
@@ -168,23 +169,23 @@ function buildRules(scheme, ruleList) {
         }
       })
     }
-    ruleList.push(`${scheme.__vModel__}: [${rules.join(',')}],`)
+    ruleList.push(`${scheme.__vFormModel__}: [${rules.join(',')}],`)
   }
 }
 
 // 构建options
 function buildOptions(scheme, optionsList) {
-  if (scheme.__vModel__ === undefined) return
+  if (scheme.__vFormModel__ === undefined) return
   // el-cascader直接有options属性，其他组件都是定义在slot中，所以有两处判断
   let { options } = scheme
   if (!options) options = scheme.__slot__.options
   if (scheme.__config__.dataType === 'dynamic') { options = [] }
-  const str = `${scheme.__vModel__}Options: ${JSON.stringify(options)},`
+  const str = `${scheme.__vFormModel__}Options: ${JSON.stringify(options)},`
   optionsList.push(str)
 }
 
 function buildProps(scheme, propsList) {
-  const str = `${scheme.__vModel__}Props: ${JSON.stringify(scheme.props.props)},`
+  const str = `${scheme.__vFormModel__}Props: ${JSON.stringify(scheme.props.props)},`
   propsList.push(str)
 }
 
@@ -207,7 +208,7 @@ function buildBeforeUpload(scheme) {
     }`
     returnList.push('isAccept')
   }
-  const str = `${scheme.__vModel__}BeforeUpload(file) {
+  const str = `${scheme.__vFormModel__}BeforeUpload(file) {
     ${rightSizeCode}
     ${acceptCode}
     return ${returnList.join('&&')}
@@ -218,7 +219,7 @@ function buildBeforeUpload(scheme) {
 // el-upload的submit
 function buildSubmitUpload(scheme) {
   const str = `submitUpload() {
-    this.$refs['${scheme.__vModel__}'].submit()
+    this.$refs['${scheme.__vFormModel__}'].submit()
   },`
   return str
 }
@@ -239,17 +240,19 @@ function buildOptionMethod(methodName, model, methodList, scheme) {
 }
 
 // js整体拼接
-function buildexport(conf, type, data, rules, selectOptions, uploadVar, props, methods, created) {
+function buildexport(conf, type, formDatas, data, rules, selectOptions, uploadVar, props, methods, created) {
+  const { formData } = conf
   const str = `${exportDefault}{
   ${inheritAttrs[type]}
   components: {},
   props: [],
   data () {
     return {
-      ${conf.formModel}: {
-        ${data}
+      ${data}
+      ${formData.formModel}: {
+        ${formDatas}
       },
-      ${conf.formRules}: {
+      ${formData.formRules}: {
         ${rules}
       },
       ${uploadVar}

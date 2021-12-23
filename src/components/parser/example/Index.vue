@@ -47,7 +47,7 @@ export default {
               prepend: '',
               append: ''
             },
-            __vModel__: 'mobile',
+            __vFormModel__: 'mobile',
             placeholder: '请输入手机号',
             style: {
               width: '100%'
@@ -90,7 +90,7 @@ export default {
             format: 'yyyy-MM-dd',
             'value-format': 'yyyy-MM-dd',
             readonly: false,
-            __vModel__: 'field101'
+            __vFormModel__: 'field101'
           },
           {
             __config__: {
@@ -122,7 +122,7 @@ export default {
                   'show-text': false,
                   'show-score': false,
                   disabled: false,
-                  __vModel__: 'field102'
+                  __vFormModel__: 'field102'
                 }
               ],
               document: 'https://element.eleme.cn/#/zh-CN/component/layout',
@@ -214,7 +214,7 @@ export default {
               prepend: '',
               append: ''
             },
-            __vModel__: 'mobile',
+            __vFormModel__: 'mobile',
             placeholder: '请输入手机号',
             style: {
               width: '100%'
@@ -257,7 +257,7 @@ export default {
             format: 'yyyy-MM-dd',
             'value-format': 'yyyy-MM-dd',
             readonly: false,
-            __vModel__: 'field101'
+            __vFormModel__: 'field101'
           }
         ],
         formRef: 'elForm',
@@ -293,7 +293,7 @@ export default {
   methods: {
     fillFormData(form, data) {
       form.fields.forEach(item => {
-        const val = data[item.__vModel__]
+        const val = data[item.__vFormModel__]
         if (val) {
           item.__config__.defaultValue = val
         }

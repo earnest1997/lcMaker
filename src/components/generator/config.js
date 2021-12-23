@@ -543,7 +543,8 @@ export const layoutComponents = [
   },
   {
     __config__: {
-      layout: 'rowFormItem',
+      
+      layout:'raw',
       tagIcon: 'pagination',
       label: '分页',
       tag:'el-pagination',
@@ -553,6 +554,7 @@ export const layoutComponents = [
     type: 'default',
     justify: 'start',
     align: 'top',
+    background:true,
     layout:'total, prev, pager, next, sizes'
   },
   {
@@ -580,7 +582,6 @@ export const layoutComponents = [
   },
   {
     __config__: {
-      layout: 'colFormItem',
       tagIcon: 'table',
       tag: 'el-table',
       document: 'https://element.eleme.cn/#/zh-CN/component/table',
@@ -636,6 +637,8 @@ export const layoutComponents = [
         //   label: '操作'
         // }
       ],
+      // 生成代码中的data的时候，会使用此作为默认值
+      defaultValue:[]
     },
     __slot__: {
       columns:[
@@ -646,13 +649,15 @@ export const layoutComponents = [
             renderKey: 15957617660153
           },
           prop: 'id',
-          label: 'ID'
+          label: 'ID',
+          search:true,
         },
         {
           __config__: {
             layout: 'raw',
             tag: 'el-table-column',
             renderKey: 1595774496335,
+            search:false,
             children: [
               {
                 __config__: {
@@ -677,6 +682,7 @@ export const layoutComponents = [
       ]
     },
     data: [],
+    __vModel__:'tableData',
     directives: [
       {
         // name: 'loading',
@@ -688,7 +694,7 @@ export const layoutComponents = [
     justify: 'start',
     align: 'top'
   }
-].map(item => ({ ...item, ...commonLayoutProps }))
+].map(item => ({ ...item, ...commonLayoutProps, __config__:{ ...item.__config__, layout: 'raw' } }))
 
 // 业务型组件
 export const businessComponents = [

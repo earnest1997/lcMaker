@@ -48,11 +48,11 @@
             </el-select>
           </el-form-item>
           <el-form-item
-            v-if="activeData.__vModel__ !== undefined"
+            v-if="activeData.__vFormModel__ !== undefined"
             label="字段名"
           >
             <el-input
-              v-model="activeData.__vModel__"
+              v-model="activeData.__vFormModel__"
               placeholder="请输入字段名（v-model）"
             />
           </el-form-item>
@@ -187,7 +187,7 @@
             />
           </el-form-item>
           <el-form-item
-            v-if="activeData.__vModel__ !== undefined"
+            v-if="activeData.__vFormModel__ !== undefined"
             label="默认值"
           >
             <el-input
@@ -640,6 +640,33 @@
                   @input="setOptionValue(item, $event)"
                 />
                 <el-input v-model="item.width" placeholder="表格宽度" size="small" />
+                <el-switch v-model="item.search" @change="setTableSearch(item)" />
+                <el-select
+                  v-show="item.search"
+                  label="查询类型"
+                  placeholder="请选择组件类型"
+                  :style="{ width: '100%' }"
+                  @change="tagChange"
+                >
+                  <el-option-group
+                    v-for="group in tagList"
+                    :key="group.label"
+                    :label="group.label"
+                  >
+                    <el-option
+                      v-for="item in group.options"
+                      :key="item.__config__.label"
+                      :label="item.__config__.label"
+                      :value="item.__config__.tagIcon"
+                    >
+                      <svg-icon
+                        class="node-icon"
+                        :icon-class="item.__config__.tagIcon"
+                      />
+                      <span> {{ item.__config__.label }}</span>
+                    </el-option>
+                  </el-option-group>
+                </el-select>
                 <div
                   class="close-btn select-line-icon"
                   @click="activeData.__slot__.columns.splice(index, 1)"
@@ -1250,7 +1277,7 @@ export default {
       layoutTreeProps: {
         label(data, node) {
           const config = data.__config__
-          return data.componentName || `${config.label}: ${data.__vModel__}`
+          return data.componentName || `${config.label}: ${data.__vFormModel__}`
         }
       }
     }
@@ -1310,6 +1337,10 @@ export default {
     }
   },
   methods: {
+    setTableSearch(item) {
+      const { tag } = item
+      this.$emit('set-search', item)
+    },
     addReg() {
       this.activeData.__config__.regList.push({
         pattern: '',
