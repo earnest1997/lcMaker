@@ -1,6 +1,7 @@
 #!/bin/sh
 . "$(dirname "$0")/scripts/husky.sh"
 
+echo 'test'
 sh "$(dirname "$0")/scripts/remove-console.sh"
 sh "$(dirname "$0")/scripts/check-todo.sh"
 # 开启子shell处理 防止中断提交
