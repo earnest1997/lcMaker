@@ -625,48 +625,58 @@
                 :key="index"
                 class="select-item"
               >
-                <div class="select-line-icon option-drag">
-                  <i class="el-icon-s-operation" />
-                </div>
-                <el-input
-                  v-model="item.label"
-                  placeholder="label"
-                  size="small"
-                />
-                <el-input
-                  placeholder="prop"
-                  size="small"
-                  :value="item.value"
-                  @input="setOptionValue(item, $event)"
-                />
-                <el-input v-model="item.width" placeholder="表格宽度" size="small" />
-                <el-switch v-model="item.search" @change="setTableSearch(item)" />
-                <el-select
-                  v-show="item.search"
-                  label="查询类型"
-                  placeholder="请选择组件类型"
-                  :style="{ width: '100%' }"
-                  @change="tagChange"
-                >
-                  <el-option-group
-                    v-for="group in tagList"
-                    :key="group.label"
-                    :label="group.label"
-                  >
-                    <el-option
-                      v-for="item in group.options"
-                      :key="item.__config__.label"
-                      :label="item.__config__.label"
-                      :value="item.__config__.tagIcon"
+                <div class="left">
+                  <!-- 表单项自带属性 -->
+                  <div class="top inline">
+                    <div class="select-line-icon option-drag">
+                      <i class="el-icon-s-operation" />
+                    </div>
+                    <el-input
+                      v-model="item.label"
+                      placeholder="label"
+                      size="small"
+                    />
+                    <el-input
+                      v-model="item.prop"
+                      placeholder="prop"
+                      size="small"
+                    />
+                    <el-input v-model="item.width" placeholder="表格宽度" size="small" />
+                  </div>
+                  <!-- 表单项自定义属性 -->
+                  <div class="bottom">
+                    <el-form-item label="是否为查询项">
+                      <el-switch v-model="item.search" />
+                    </el-form-item>
+                    <el-select
+                      v-show="item.search"
+                      v-model="selectedVal"
+                      label="查询类型"
+                      placeholder="请选择组件类型"
+                      :style="{ width: '100%' }"
+                      @change="val=>setTableSearch(val,item)"
                     >
-                      <svg-icon
-                        class="node-icon"
-                        :icon-class="item.__config__.tagIcon"
-                      />
-                      <span> {{ item.__config__.label }}</span>
-                    </el-option>
-                  </el-option-group>
-                </el-select>
+                      <el-option-group
+                        v-for="group in tagList"
+                        :key="group.label"
+                        :label="group.label"
+                      >
+                        <el-option
+                          v-for="item in group.options"
+                          :key="item.__config__.label"
+                          :label="item.__config__.label"
+                          :value="item.__config__.tagIcon"
+                        >
+                          <svg-icon
+                            class="node-icon"
+                            :icon-class="item.__config__.tagIcon"
+                          />
+                          <span> {{ item.__config__.label }}</span>
+                        </el-option>
+                      </el-option-group>
+                    </el-select>
+                  </div>
+                </div>
                 <div
                   class="close-btn select-line-icon"
                   @click="activeData.__slot__.columns.splice(index, 1)"
@@ -690,13 +700,13 @@
               <el-switch v-model="activeData.__config__.isShowPagination" />
             </el-form-item>
             <el-form-item v-show="activeData.__config__.isShowPagination" label="分页条数">
-              <el-input-number v-model="activeData.__config__.pageSize" />
+              <el-input-number v-model="tableInfo.pageSize" />
             </el-form-item>
           </template>
 
           <template
             v-if="
-              ['el-cascader', 'el-table'].includes(activeData.__config__.tag)
+              ['el-cascader'].includes(activeData.__config__.tag)
             "
           >
             <el-divider>选项</el-divider>
@@ -1194,6 +1204,8 @@ export default {
       dialogVisible: false,
       iconsVisible: false,
       currentIconModel: null,
+      selectedVal:'',
+      tableInfo:{ pageSize:20 },
       dateTypeOptions: [
         {
           label: '日(date)',
@@ -1334,12 +1346,18 @@ export default {
         saveFormConf(val)
       },
       deep: true
-    }
+    },
+    'activeData.__config__.isShowPagination':'setTablePagination'
   },
   methods: {
-    setTableSearch(item) {
-      const { tag } = item
-      this.$emit('set-search', item)
+    // 为表格绑定分页
+    setTablePagination(isShowPagination) {
+      const { pageSize } = this.tableInfo
+      this.$emit('set-table-pagination', { isShowPagination, pageSize })
+    },
+    setTableSearch(type, item) {
+      this.selectedVal = type
+      this.$emit('set-search', { type, ...item })
     },
     addReg() {
       this.activeData.__config__.regList.push({
@@ -1522,8 +1540,20 @@ export default {
 }
 .select-item {
   display: flex;
-  border: 1px dashed #fff;
+  border: 1px solid #ebeef5;
+  border-radius: 2px;
+  padding:5px;
   box-sizing: border-box;
+  .inline{
+  display: flex;
+  }
+  .el-form-item{
+    margin-bottom:5px;
+  }
+  .el-select{
+    width: 245px;
+    margin-left: 30px;
+  }
   & .close-btn {
     cursor: pointer;
     color: #f56c6c;

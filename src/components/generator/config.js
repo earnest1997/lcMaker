@@ -555,6 +555,7 @@ export const layoutComponents = [
     justify: 'start',
     align: 'top',
     background:true,
+    pageSize:20,
     layout:'total, prev, pager, next, sizes'
   },
   {
@@ -597,7 +598,7 @@ export const layoutComponents = [
       method: 'get',
       dataPath: 'list',
       dataConsumer: 'data',
-      isShowPagination:true,
+      isShowPagination:false,
       pageSize:20,
       url: 'https://www.fastmock.site/mock/f8d7a54fb1e60561e2f720d5a810009d/fg/tableData',
       children: [

@@ -115,7 +115,6 @@
         <draggable class="drawing-board bottom" :animation="340"
                    :list="drawingContainer"
                    group="containerGroup"
-                   @move="onMoveContainer"
         >
           <NormalDragItem
             v-for="(item, index) in drawingContainer"
@@ -143,7 +142,8 @@
       :showField="!!drawingList.length"
       @tag-change="tagChange"
       @fetch-data="fetchData"
-      @set-search="addComponent"
+      @set-search="addTableSearchItem"
+      @set-table-pagination="setPagination"
     />
 
     <form-drawer
@@ -196,7 +196,7 @@ import {
   vueTemplate,
   vueScript,
   cssStyle
-} from '@/components/generator/html'
+} from '@/components/generator/html/index'
 import { makeUpJs } from '@/components/generator/js'
 import { makeUpCss } from '@/components/generator/css'
 import drawingDefalut from '@/components/generator/drawingDefalut'
@@ -220,6 +220,8 @@ let tempActiveData
 const drawingListInDB = getDrawingList()
 const formConfInDB = getFormConf()
 const idGlobal = getIdGlobal()
+
+const compPool = [...inputComponents, ...selectComponents, ...layoutComponents]
 
 export default {
   name:'ViewsForm',
@@ -282,6 +284,9 @@ export default {
   },
   computed: {},
   watch: {
+    drawingContainer(val, old) {
+      console.log(val[0], old[0])
+    },
     // eslint-disable-next-line func-names
     'activeData.__config__.label': function (val, oldVal) {
       if (
@@ -391,6 +396,7 @@ export default {
       }
     },
     activeFormItem(currentItem) {
+      // 
       this.activeData = currentItem
       this.activeId = currentItem.__config__.formId
     },
@@ -411,7 +417,7 @@ export default {
       return true
     },
     onMoveContainer(e, originalEvent) {
-      console.log(e, originalEvent, 'onMove')
+      console.log(e, originalEvent, 'onMove', JSON.stringify(e).includes('group'))
       // 停靠对象 如果停靠对象是A区，就拒绝掉
       // if (e.relatedContext.element.isConfig) return false
 
@@ -419,11 +425,48 @@ export default {
       // if (e.draggedContext.element.isConfig) return false
       return true
     },
+    // 表格配置start
+    openPagination(props) {
+      let target = compPool.find(item => {
+        const { __config__:{ tagIcon } } = item
+        return tagIcon === 'pagination'
+      })
+      target = deepClone(target)
+      // 为组件生成唯一ID 方便标识是否是active项
+      target = this.cloneComponent(target)
+      target = { ...target, ...props }
+      this.drawingContainer.push(target)
+    },
+    closePagination() {
+      this.drawingContainer.pop()
+    },
+    setPagination({ isShowPagination, ...props }) {
+      if (isShowPagination) {
+        this.openPagination(props)
+      } else {
+        this.closePagination()
+      }
+    },
+    addTableSearchItem(data) {
+      const { type, label, prop } = data
+      console.log(type, 'cc', prop)
+      let target = compPool.find(item => {
+        const { __config__:{ tagIcon } } = item
+        return tagIcon === type
+      })
+      target = deepClone(target)
+      // 为组件生成唯一ID 方便标识是否是active项
+      target = this.cloneComponent(target)
+      target.__config__.label = label
+      target.__vFormModel__ = prop
+      this.drawingList.push(target)
+      this.activeFormItem(target)
+    },
+    // 表格配置end
     addComponent(item) {
       const clone = this.cloneComponent(item)
       this.fetchData(clone)
       this.drawingList.push(clone)
-      this.activeFormItem(clone)
     },
     cloneComponent(origin) {
       const clone = deepClone(origin)
@@ -502,6 +545,7 @@ export default {
     generateCode() {
       const { type } = this.generateConf
       this.AssemblePageData()
+      console.log(typeof makeUpJs, typeof vueScript)
       const script = vueScript(makeUpJs(this.pageData, type))
       const html = vueTemplate(makeUpHtml(this.pageData, type))
       const css = cssStyle(makeUpCss(this.pageData))

@@ -62,4 +62,10 @@ function buildTableMethods(config, confGlobal) {
   return Reflect.keys(methodsMap).filter(([key]) => key.description === 'true').map(key => methodsMap[key])
 }
 
-export const getCompMethods = (tag, config) => ({ 'el-table':buildTableMethods(config) }[tag])
+const getMethodsMap = arg => ({ 'el-table':() => buildTableMethods(...arg) })
+
+export function getCompMethods(tag, ...arg) {
+  const methodsMap = getMethodsMap(arg)
+  if (!(tag in methodsMap)) return ''
+  return methodsMap[tag]()
+}

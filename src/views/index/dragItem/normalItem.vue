@@ -30,43 +30,52 @@ const components = {
   }
 }
 const layouts = {
-  colFormItem(h, currentItem, index, list) {
-    const { activeItem } = this.$listeners
+  // colFormItem(h, currentItem, index, list) {
+  //   const { activeItem } = this.$listeners
+  //   const config = currentItem.__config__
+  //   const child = renderChildren.apply(this, arguments)
+  //   let className = this.activeId === config.formId
+  //     ? 'drawing-item active-from-item'
+  //     : 'drawing-item'
+  //   if (this.formConf.unFocusedComponentBorder) className += ' unfocus-bordered'
+  // let labelWidth = config.labelWidth ? `${config.labelWidth}px` : null
+  // if (config.showLabel === false) labelWidth = '0'
+  // return (
+  //       <div
+  //         span={config.span}
+  //         class={className}
+  //         onClick={event => {
+  //           activeItem(currentItem)
+  //           event.stopPropagation()
+  //         }}
+  //       >
+  //           <render
+  //             key={config.renderKey}
+  //             conf={currentItem}
+  //               onInput={event => {
+  //                 this.$set(config, 'defaultValue', event)
+  //               }}
+  //             >
+  //               {child}
+  //             </render>
+  //           {components.itemBtns.apply(this, arguments)}
+  //         </div>
+  //   )
+  // },
+  raw(h, currentItem, index, list) {
     const config = currentItem.__config__
-    const child = renderChildren.apply(this, arguments)
+    const { activeItem } = this.$listeners
     let className = this.activeId === config.formId
-      ? 'drawing-item active-from-item'
+      ? 'drawing-item active-container-item'
       : 'drawing-item'
-    if (this.formConf.unFocusedComponentBorder) className += ' unfocus-bordered'
-    let labelWidth = config.labelWidth ? `${config.labelWidth}px` : null
-    if (config.showLabel === false) labelWidth = '0'
+    const child = renderChildren.apply(this, arguments)
     return (
-          <div
-            span={config.span}
+      <div span={config.span}
             class={className}
             onClick={event => {
               activeItem(currentItem)
               event.stopPropagation()
-            }}
-          >
-              <render
-                key={config.renderKey}
-                conf={currentItem}
-                onInput={event => {
-                  this.$set(config, 'defaultValue', event)
-                }}
-              >
-                {child}
-              </render>
-            {components.itemBtns.apply(this, arguments)}
-          </div>
-    )
-  },
-  raw(h, currentItem, index, list) {
-    const config = currentItem.__config__
-    
-    const child = renderChildren.apply(this, arguments)
-    return (
+            }}>
           <render
             key={config.renderKey}
             conf={currentItem}
@@ -76,6 +85,7 @@ const layouts = {
           >
             {child}
           </render>
+          </div>
     )
   }
 }

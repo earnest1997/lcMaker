@@ -55,9 +55,9 @@ export function makeUpJs(pageConfig, type) {
   return script
 }
 
-function buildCompMethods(scheme, methodList) {
+function buildCompMethods(scheme, methodList, confGlobal) {
   const { __config__:{ tag } } = scheme
-  const methods = getCompMethods(tag)
+  const methods = getCompMethods(tag, scheme, confGlobal)
   if (methods) {
     methodList = [...methods, ...methodList]
   }
@@ -74,7 +74,7 @@ function buildAttributes(params) {
   buildRules(scheme, ruleList)
 
   // 为组件绑定自己的方法
-  buildCompMethods(scheme, methodList)
+  buildCompMethods(scheme, methodList, confGlobal)
 
   // 特殊处理options属性
   if (scheme.options || (slot && slot.options && slot.options.length)) {
