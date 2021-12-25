@@ -1,15 +1,17 @@
 export const getPageMethods = confGlobal => ({
-  file: confGlobal.formBtns ? {
-    submitForm: `submitForm() {
+  file: confGlobal.formBtns
+    ? {
+      submitForm: `submitForm() {
       this.$refs['${confGlobal.formRef}'].validate(valid => {
         if(!valid) return
         // TODO 提交表单
       })
     },`,
-    resetForm: `resetForm() {
+      resetForm: `resetForm() {
       this.$refs['${confGlobal.formRef}'].resetFields()
     },`
-  } : null,
+    }
+    : null,
   dialog: {
     onOpen: 'onOpen() {},',
     onClose: `onClose() {
@@ -24,23 +26,25 @@ export const getPageMethods = confGlobal => ({
         this.close()
       })
     },`
-  },
-
+  }
 })
 
 function buildTableMethods(config, confGlobal) {
   const { formRef } = confGlobal
-  const { __slot__:{ columns }, __config__:{ isShowPagination } } = config
+  const {
+    __slot__: { columns },
+    __config__: { isShowPagination }
+  } = config
   const isSearchAble = columns.some(item => item.search)
   const methodsMap = {
-    [Symbol(isShowPagination)]:`handlePageInfoChange (key, val) {
+    [Symbol(isShowPagination)]: `handlePageInfoChange (key, val) {
         this[key] = val
         this.getDataAndRefresh({
           page: this.page,
           page_size: this.page_size
         })
       },`,
-    [Symbol(isSearchAble)]:`handleSearch () {
+    [Symbol(isSearchAble)]: `handleSearch () {
         this.page = 1
         this.getDataAndRefresh({ page_size: this.page_size })
       },
@@ -59,13 +63,17 @@ function buildTableMethods(config, confGlobal) {
         })
       },`
   }
-  return Reflect.keys(methodsMap).filter(([key]) => key.description === 'true').map(key => methodsMap[key])
+  const keys = Reflect.ownKeys(methodsMap).filter(
+    key => key.description === 'true'
+  )
+  return [...keys].map(key => methodsMap[key])
 }
 
-const getMethodsMap = arg => ({ 'el-table':() => buildTableMethods(...arg) })
+const getMethodsMap = arg => ({ 'el-table': () => buildTableMethods(...arg) })
 
 export function getCompMethods(tag, ...arg) {
   const methodsMap = getMethodsMap(arg)
+
   if (!(tag in methodsMap)) return ''
   return methodsMap[tag]()
 }

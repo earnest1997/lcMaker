@@ -42,7 +42,6 @@ const layouts = {
     if (config.showLabel === false) labelWidth = '0'
     return (
       <div
-        span={config.span}
         class={className}
         onClick={event => {
           activeItem(currentItem)
@@ -87,11 +86,14 @@ const layouts = {
       )
     }
     return (
-      <div onClick={event => {
-        activeItem(currentItem)
-        event.stopPropagation()
-      }}><span class="component-name">{config.componentName}</span>
-      {this.group}
+      <div
+        onClick={event => {
+          activeItem(currentItem)
+          event.stopPropagation()
+        }}
+      >
+        <span class="component-name">{config.componentName}</span>
+        {this.group}
         <draggable
           list={config.children || []}
           animation={340}
@@ -142,7 +144,14 @@ export default {
     render,
     draggable
   },
-  props: ['currentItem', 'index', 'drawingList', 'activeId', 'formConf', 'group'],
+  props: [
+    'currentItem',
+    'index',
+    'drawingList',
+    'activeId',
+    'formConf',
+    'group'
+  ],
   render(h) {
     const layout = layouts[this.currentItem.__config__.layout]
 

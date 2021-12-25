@@ -7,7 +7,7 @@ module.exports = {
   rules: {
     'linebreak-style': 0,
     'no-console': 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'vue/no-unused-components': 0,
     'no-unused-vars': 0,
     'import/order': 0,

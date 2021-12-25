@@ -19,9 +19,12 @@ const inheritAttrs = {
  * @param {String} type 生成类型，文件或弹窗等
  */
 export function makeUpJs(pageConfig, type) {
-  const { formData:{ fields, ...formConf }, containerData } = pageConfig
+  const {
+    formData: { fields, ...formConf },
+    containerData
+  } = pageConfig
   const pageData = [...fields, ...containerData]
-  
+
   confGlobal = deepClone(formConf)
   const formDataList = []
   const dataList = []
@@ -33,12 +36,19 @@ export function makeUpJs(pageConfig, type) {
   const created = []
 
   const params = {
-    formDataList, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created 
+    formDataList,
+    dataList,
+    ruleList,
+    optionsList,
+    methodList,
+    propsList,
+    uploadVarList,
+    created
   }
   pageData.forEach(el => {
     buildAttributes({ el, ...params })
   })
-  // 
+  //
   const script = buildexport(
     pageConfig,
     type,
@@ -56,17 +66,32 @@ export function makeUpJs(pageConfig, type) {
 }
 
 function buildCompMethods(scheme, methodList, confGlobal) {
-  const { __config__:{ tag } } = scheme
+  const {
+    __config__: { tag }
+  } = scheme
   const methods = getCompMethods(tag, scheme, confGlobal)
+
   if (methods) {
-    methodList = [...methods, ...methodList]
+    // methodList = [...methods, ...methodList]
+    // eslint-disable-next-line no-restricted-syntax
+    for (const method of methods) {
+      methodList.push(method)
+    }
   }
 }
 
 // 构建组件属性
 function buildAttributes(params) {
   const {
-    el:scheme, formDataList, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created 
+    el: scheme,
+    formDataList,
+    dataList,
+    ruleList,
+    optionsList,
+    methodList,
+    propsList,
+    uploadVarList,
+    created
   } = params
   const config = scheme.__config__
   const slot = scheme.__slot__
@@ -109,7 +134,17 @@ function buildAttributes(params) {
   // 构建子级组件属性
   if (config.children) {
     config.children.forEach(item => {
-      buildAttributes(item, formDataList, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created)
+      buildAttributes(
+        item,
+        formDataList,
+        dataList,
+        ruleList,
+        optionsList,
+        methodList,
+        propsList,
+        uploadVarList,
+        created
+      )
     })
   }
 }
@@ -121,7 +156,7 @@ function callInCreated(methodName, created) {
 
 // 混入处理函数
 function mixinMethod(type) {
-  const list = [];
+  const list = []
   const minxins = getPageMethods(confGlobal)
   const methods = minxins[type]
   if (methods) {
@@ -136,15 +171,23 @@ function mixinMethod(type) {
 // 构建data
 function buildData(scheme, formDataList, dataList) {
   const config = scheme.__config__
-  const modelName = scheme.__vFormModel__ || scheme.__vModel__
+  const model = scheme.__vFormModel__ || scheme.__vModel__
   const isFormData = '__vFormModel__' in scheme
-  
-  if (!modelName) return
+
+  if (!model) return
+  if (Array.isArray(model)) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const _model of model) {
+      const [key, val] = Object.entries(_model)
+      dataList.push(`${key}:${val},`)
+    }
+    return
+  }
   const defaultValue = JSON.stringify(config.defaultValue)
   if (isFormData) {
-    formDataList.push(`${modelName}: ${defaultValue},`)
+    formDataList.push(`${model}: ${defaultValue},`)
   } else {
-    dataList.push(`${modelName}: ${defaultValue},`)
+    dataList.push(`${model}: ${defaultValue},`)
   }
 }
 
@@ -155,16 +198,24 @@ function buildRules(scheme, ruleList) {
   const rules = []
   if (ruleTrigger[config.tag]) {
     if (config.required) {
-      const type = Array.isArray(config.defaultValue) ? 'type: \'array\',' : ''
-      let message = Array.isArray(config.defaultValue) ? `请至少选择一个${config.label}` : scheme.placeholder
+      const type = Array.isArray(config.defaultValue) ? "type: 'array'," : ''
+      let message = Array.isArray(config.defaultValue)
+        ? `请至少选择一个${config.label}`
+        : scheme.placeholder
       if (message === undefined) message = `${config.label}不能为空`
-      rules.push(`{ required: true, ${type} message: '${message}', trigger: '${ruleTrigger[config.tag]}' }`)
+      rules.push(
+        `{ required: true, ${type} message: '${message}', trigger: '${
+          ruleTrigger[config.tag]
+        }' }`
+      )
     }
     if (config.regList && Array.isArray(config.regList)) {
       config.regList.forEach(item => {
         if (item.pattern) {
           rules.push(
-            `{ pattern: ${eval(item.pattern)}, message: '${item.message}', trigger: '${ruleTrigger[config.tag]}' }`
+            `{ pattern: ${eval(item.pattern)}, message: '${
+              item.message
+            }', trigger: '${ruleTrigger[config.tag]}' }`
           )
         }
       })
@@ -179,21 +230,27 @@ function buildOptions(scheme, optionsList) {
   // el-cascader直接有options属性，其他组件都是定义在slot中，所以有两处判断
   let { options } = scheme
   if (!options) options = scheme.__slot__.options
-  if (scheme.__config__.dataType === 'dynamic') { options = [] }
+  if (scheme.__config__.dataType === 'dynamic') {
+    options = []
+  }
   const str = `${scheme.__vFormModel__}Options: ${JSON.stringify(options)},`
   optionsList.push(str)
 }
 
 function buildProps(scheme, propsList) {
-  const str = `${scheme.__vFormModel__}Props: ${JSON.stringify(scheme.props.props)},`
+  const str = `${scheme.__vFormModel__}Props: ${JSON.stringify(
+    scheme.props.props
+  )},`
   propsList.push(str)
 }
 
 // el-upload的BeforeUpload
 function buildBeforeUpload(scheme) {
   const config = scheme.__config__
-  const unitNum = units[config.sizeUnit]; let rightSizeCode = ''; let acceptCode = ''; const
-    returnList = []
+  const unitNum = units[config.sizeUnit]
+  let rightSizeCode = ''
+  let acceptCode = ''
+  const returnList = []
   if (config.fileSize) {
     rightSizeCode = `let isRightSize = file.size / ${unitNum} < ${config.fileSize}
     if(!isRightSize){
@@ -240,7 +297,18 @@ function buildOptionMethod(methodName, model, methodList, scheme) {
 }
 
 // js整体拼接
-function buildexport(conf, type, formDatas, data, rules, selectOptions, uploadVar, props, methods, created) {
+function buildexport(
+  conf,
+  type,
+  formDatas,
+  data,
+  rules,
+  selectOptions,
+  uploadVar,
+  props,
+  methods,
+  created
+) {
   const { formData } = conf
   const str = `${exportDefault}{
   ${inheritAttrs[type]}

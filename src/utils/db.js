@@ -1,26 +1,32 @@
-const DRAWING_ITEMS = 'drawingItems'
+const CONTAINER_ITEMS = 'container'
+const FORM_ITEMS = 'form'
 const DRAWING_ITEMS_VERSION = '1.2'
-const DRAWING_ITEMS_VERSION_KEY = 'DRAWING_ITEMS_VERSION'
+const ITEM_KEY = 'DRAWING_ITEMS_VERSION'
 const DRAWING_ID = 'idGlobal'
 const TREE_NODE_ID = 'treeNodeId'
 const FORM_CONF = 'formConf'
 
-export function getDrawingList() {
+export function getDrawingFromHistory() {
   // 加入缓存版本的概念，保证缓存数据与程序匹配
-  const version = localStorage.getItem(DRAWING_ITEMS_VERSION_KEY)
+  const version = localStorage.getItem(ITEM_KEY)
   if (version !== DRAWING_ITEMS_VERSION) {
-    localStorage.setItem(DRAWING_ITEMS_VERSION_KEY, DRAWING_ITEMS_VERSION)
-    saveDrawingList([])
+    localStorage.setItem(ITEM_KEY, DRAWING_ITEMS_VERSION)
+    saveDrawingData([], [])
     return null
   }
 
-  const str = localStorage.getItem(DRAWING_ITEMS)
-  if (str) return JSON.parse(str)
-  return null
+  const form = localStorage.getItem(FORM_ITEMS)
+  const container = localStorage.getItem(CONTAINER_ITEMS)
+  return [form, container].map(item => {
+    if (!item) return []
+
+    return JSON.parse(item)
+  })
 }
 
-export function saveDrawingList(list) {
-  localStorage.setItem(DRAWING_ITEMS, JSON.stringify(list))
+export function saveDrawingData(form, container) {
+  form && localStorage.setItem(FORM_ITEMS, JSON.stringify(form))
+  container && localStorage.setItem(CONTAINER_ITEMS, JSON.stringify(container))
 }
 
 export function getIdGlobal() {

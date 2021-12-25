@@ -525,7 +525,7 @@ export const selectComponents = [
 
 // 布局型组件 【左面板】
 const commonLayoutProps = {
-  isContainerComp:true
+  isContainerComp: true
 }
 export const layoutComponents = [
   {
@@ -539,24 +539,24 @@ export const layoutComponents = [
     },
     type: 'default',
     justify: 'start',
-    align: 'top',
+    align: 'top'
   },
   {
     __config__: {
-      
-      layout:'raw',
+      layout: 'raw',
       tagIcon: 'pagination',
       label: '分页',
-      tag:'el-pagination',
+      tag: 'el-pagination',
       document:
         'https://element.eleme.cn/#/zh-CN/component/layout#row-attributes'
     },
+    __vModel__: { page: 0, page_size: 20 },
     type: 'default',
     justify: 'start',
     align: 'top',
-    background:true,
-    pageSize:20,
-    layout:'total, prev, pager, next, sizes'
+    background: true,
+    pageSize: 20,
+    layout: 'total, prev, pager, next, sizes'
   },
   {
     __config__: {
@@ -598,8 +598,8 @@ export const layoutComponents = [
       method: 'get',
       dataPath: 'list',
       dataConsumer: 'data',
-      isShowPagination:false,
-      pageSize:20,
+      isShowPagination: false,
+      pageSize: 20,
       url: 'https://www.fastmock.site/mock/f8d7a54fb1e60561e2f720d5a810009d/fg/tableData',
       children: [
         // {
@@ -639,10 +639,10 @@ export const layoutComponents = [
         // }
       ],
       // 生成代码中的data的时候，会使用此作为默认值
-      defaultValue:[]
+      defaultValue: []
     },
     __slot__: {
-      columns:[
+      columns: [
         {
           __config__: {
             layout: 'raw',
@@ -651,14 +651,14 @@ export const layoutComponents = [
           },
           prop: 'id',
           label: 'ID',
-          search:true,
+          search: true
         },
         {
           __config__: {
             layout: 'raw',
             tag: 'el-table-column',
             renderKey: 1595774496335,
-            search:false,
+            search: false,
             children: [
               {
                 __config__: {
@@ -683,7 +683,7 @@ export const layoutComponents = [
       ]
     },
     data: [],
-    __vModel__:'tableData',
+    __vModel__: { tableData: [] },
     directives: [
       {
         // name: 'loading',
@@ -695,7 +695,11 @@ export const layoutComponents = [
     justify: 'start',
     align: 'top'
   }
-].map(item => ({ ...item, ...commonLayoutProps, __config__:{ ...item.__config__, layout: 'raw' } }))
+].map(item => ({
+  ...item,
+  ...commonLayoutProps,
+  __config__: { ...item.__config__, layout: 'raw' }
+}))
 
 // 业务型组件
 export const businessComponents = [

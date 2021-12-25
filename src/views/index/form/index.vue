@@ -21,10 +21,13 @@
               {{ item.title }}
             </div>
             <draggable
-
               class="components-draggable"
               :list="item.list"
-              :group="{ name: item.groupName || 'formComponentsGroup', pull: 'clone', put: false }"
+              :group="{
+                name: item.groupName || 'formComponentsGroup',
+                pull: 'clone',
+                put: false
+              }"
               :clone="cloneComponent"
               draggable=".components-item"
               :sort="false"
@@ -112,13 +115,15 @@
         </el-row>
       </el-scrollbar>
       <el-scrollbar>
-        <draggable class="drawing-board bottom" :animation="340"
-                   :list="drawingContainer"
-                   group="containerGroup"
+        <draggable
+          class="drawing-board bottom"
+          :animation="340"
+          :list="drawingContainer"
+          group="containerGroup"
         >
           <NormalDragItem
             v-for="(item, index) in drawingContainer"
-            :key="item.renderKey"
+            :key="`normal-${item.renderKey || item.tag}`"
             :group="drawingContainer"
             :drawingList="drawingContainer"
             :currentItem="item"
@@ -139,7 +144,7 @@
     <right-panel
       :activeData="activeData"
       :formConf="formConf"
-      :showField="!!drawingList.length"
+      :showField="!!drawingList.length || !!drawingContainer.length"
       @tag-change="tagChange"
       @fetch-data="fetchData"
       @set-search="addTableSearchItem"
@@ -205,8 +210,8 @@ import CodeTypeDialog from '../CodeTypeDialog'
 import FormDragItem from '../dragItem/formItem'
 import NormalDragItem from '../dragItem/normalItem'
 import {
-  getDrawingList,
-  saveDrawingList,
+  getDrawingFromHistory,
+  saveDrawingData,
   getIdGlobal,
   saveIdGlobal,
   getFormConf
@@ -217,14 +222,14 @@ let beautifier
 const emptyActiveData = { style: {}, autosize: {} }
 let oldActiveId
 let tempActiveData
-const drawingListInDB = getDrawingList()
+const drawingListInDB = getDrawingFromHistory()
 const formConfInDB = getFormConf()
 const idGlobal = getIdGlobal()
 
 const compPool = [...inputComponents, ...selectComponents, ...layoutComponents]
 
 export default {
-  name:'ViewsForm',
+  name: 'ViewsForm',
   components: {
     draggable,
     render,
@@ -244,22 +249,22 @@ export default {
       selectComponents,
       layoutComponents,
       labelWidth: 100,
-      drawingList: drawingDefalut,
+      drawingList: [],
       // 表格
-      drawingContainer:[],
+      drawingContainer: [],
       drawingData: {},
       activeId: drawingDefalut[0].formId,
       drawerVisible: false,
-      pageData:{
+      pageData: {
         formData: {},
-        containerData:{}
+        containerData: {}
       },
       dialogVisible: false,
       jsonDrawerVisible: false,
       generateConf: null,
       showFileName: false,
       activeData: drawingDefalut[0],
-      saveDrawingListDebounce: debounce(340, saveDrawingList),
+      saveDrawingDataDebounce: debounce(340, saveDrawingData),
       saveIdGlobalDebounce: debounce(340, saveIdGlobal),
       leftComponents: [
         {
@@ -272,9 +277,9 @@ export default {
         },
         {
           title: '布局型组件',
-          groupName:'containerGroup',
+          groupName: 'containerGroup',
           list: layoutComponents
-        },
+        }
         // {
         //   title: '业务型组件',
         //   list: businessComponents
@@ -284,9 +289,6 @@ export default {
   },
   computed: {},
   watch: {
-    drawingContainer(val, old) {
-      console.log(val[0], old[0])
-    },
     // eslint-disable-next-line func-names
     'activeData.__config__.label': function (val, oldVal) {
       if (
@@ -304,9 +306,16 @@ export default {
       },
       immediate: true
     },
+    drawingContainer: {
+      handler(val) {
+        this.saveDrawingDataDebounce(this.drawingList, val)
+        if (val.length === 0) this.idGlobal = 100
+      },
+      deep: true
+    },
     drawingList: {
       handler(val) {
-        this.saveDrawingListDebounce(val)
+        this.saveDrawingDataDebounce(val, this.drawingContainer)
         if (val.length === 0) this.idGlobal = 100
       },
       deep: true
@@ -319,8 +328,13 @@ export default {
     }
   },
   mounted() {
-    if (Array.isArray(drawingListInDB) && drawingListInDB.length > 0) {
-      this.drawingList = drawingListInDB
+    if (
+      Array.isArray(drawingListInDB)
+      && drawingListInDB.filter(Boolean).length > 0
+    ) {
+      const [list, container] = drawingListInDB
+      this.drawingList = list.length ? list : drawingDefalut
+      this.drawingContainer = container
     } else {
       this.drawingList = drawingDefalut
     }
@@ -396,7 +410,7 @@ export default {
       }
     },
     activeFormItem(currentItem) {
-      // 
+      //
       this.activeData = currentItem
       this.activeId = currentItem.__config__.formId
     },
@@ -408,7 +422,6 @@ export default {
       }
     },
     onMoveForm(e, originalEvent) {
-      console.log(e, originalEvent, 'onMove')
       // 停靠对象 如果停靠对象是A区，就拒绝掉
       // if (e.relatedContext.element.isConfig) return false
 
@@ -417,7 +430,6 @@ export default {
       return true
     },
     onMoveContainer(e, originalEvent) {
-      console.log(e, originalEvent, 'onMove', JSON.stringify(e).includes('group'))
       // 停靠对象 如果停靠对象是A区，就拒绝掉
       // if (e.relatedContext.element.isConfig) return false
 
@@ -428,7 +440,9 @@ export default {
     // 表格配置start
     openPagination(props) {
       let target = compPool.find(item => {
-        const { __config__:{ tagIcon } } = item
+        const {
+          __config__: { tagIcon }
+        } = item
         return tagIcon === 'pagination'
       })
       target = deepClone(target)
@@ -438,7 +452,10 @@ export default {
       this.drawingContainer.push(target)
     },
     closePagination() {
-      this.drawingContainer.pop()
+      // TODO 目前只支持一个表格 一个分页的组合
+      if (this.drawingContainer.length > 1) {
+        this.drawingContainer.pop()
+      }
     },
     setPagination({ isShowPagination, ...props }) {
       if (isShowPagination) {
@@ -449,9 +466,10 @@ export default {
     },
     addTableSearchItem(data) {
       const { type, label, prop } = data
-      console.log(type, 'cc', prop)
       let target = compPool.find(item => {
-        const { __config__:{ tagIcon } } = item
+        const {
+          __config__: { tagIcon }
+        } = item
         return tagIcon === type
       })
       target = deepClone(target)
@@ -495,11 +513,11 @@ export default {
     },
     AssemblePageData() {
       this.pageData = {
-        formData:{
+        formData: {
           fields: deepClone(this.drawingList),
           ...this.formConf
         },
-        containerData:deepClone(this.drawingContainer)
+        containerData: deepClone(this.drawingContainer)
       }
     },
     generate(data) {
@@ -523,6 +541,7 @@ export default {
       this.$confirm('确定要清空所有组件吗？', '提示', { type: 'warning' }).then(
         () => {
           this.drawingList = []
+          this.drawingContainer = []
           this.idGlobal = 100
         }
       )
@@ -545,7 +564,6 @@ export default {
     generateCode() {
       const { type } = this.generateConf
       this.AssemblePageData()
-      console.log(typeof makeUpJs, typeof vueScript)
       const script = vueScript(makeUpJs(this.pageData, type))
       const html = vueTemplate(makeUpHtml(this.pageData, type))
       const css = cssStyle(makeUpCss(this.pageData))

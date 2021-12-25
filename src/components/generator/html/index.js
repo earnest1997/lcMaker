@@ -34,9 +34,7 @@ export function cssStyle(cssStr) {
     ${cssStr}
   </style>`
 }
-function buildPageTemplate() {
-
-}
+function buildPageTemplate() {}
 
 function buildContainerTemplate() {}
 
@@ -90,14 +88,17 @@ function colWrapper(scheme, str) {
 
 const layouts = () => {
   const tags = (async () => {
-    await import('./tag.js');
-  })();
-  return ({
+    await import('./tag.js')
+  })()
+  return {
     colFormItem(scheme) {
       const config = scheme.__config__
       let labelWidth = ''
       let label = `label="${config.label}"`
-      if (config.labelWidth && config.labelWidth !== globalObj.confGlobal.labelWidth) {
+      if (
+        config.labelWidth
+        && config.labelWidth !== globalObj.confGlobal.labelWidth
+      ) {
         labelWidth = `label-width="${config.labelWidth}px"`
       }
       if (config.showLabel === false) {
@@ -127,14 +128,11 @@ const layouts = () => {
     },
     raw(scheme) {
       const config = scheme.__config__
-      const children = config.children.map(el => layouts()[el.__config__.layout](el))
       const tagDom = tags[config.tag] ? tags[config.tag](scheme) : null
       return tagDom
     }
-  })
+  }
 }
-
-
 
 /**
  * 组装html代码。【入口函数】
