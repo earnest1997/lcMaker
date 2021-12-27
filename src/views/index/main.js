@@ -6,6 +6,8 @@ import '@/icons'
 import axios from 'axios'
 import Tinymce from '@/components/tinymce/index.vue'
 
+// TODO
+const TODO = 's'
 Vue.component('tinymce', Tinymce)
 
 Vue.config.productionTip = false
