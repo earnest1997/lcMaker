@@ -228,6 +228,7 @@ const idGlobal = getIdGlobal()
 
 const compPool = [...inputComponents, ...selectComponents, ...layoutComponents]
 
+// TODO:生成分享链接
 export default {
   name: 'ViewsForm',
   components: {
