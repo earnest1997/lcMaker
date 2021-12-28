@@ -1,12 +1,12 @@
 #!/bin/sh
 . "$(dirname "$0")/scripts/husky.sh"
 
+sh "$(dirname "$0")/scripts/remove-console.sh"
 
 # 开启子shell处理 防止中断提交
 npm run lint-new &
 
 wait 
-sh "$(dirname "$0")/scripts/remove-console.sh"
 sh "$(dirname "$0")/scripts/check-todo.sh"
 # # commit_msg=
 # echo "$1"
