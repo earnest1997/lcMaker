@@ -151,8 +151,9 @@ function buildAttributes(params) {
 
 // 在Created调用函数
 function callInCreated(methodName, created) {
-  created.push(`this.${methodName}()`); console.log(99)
-  console.log(797)
+  created.push(`this.${methodName}()`)
+  console.log(99)
+  console.log(799997)
 }
 
 // 混入处理函数
