@@ -7,6 +7,9 @@ import axios from 'axios'
 import Tinymce from '@/components/tinymce/index.vue'
 
 // TODO
+Vue.component('tinymce', Tinymce)
+console.log('test')
+console.log(888)
 
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios
