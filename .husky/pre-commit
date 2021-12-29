@@ -1,5 +1,5 @@
 #!/bin/sh
-. "$(dirname "$0")/scripts/husky.sh"
+. "$(dirname "$0")/_/husky.sh"
 
 sh "$(dirname "$0")/scripts/remove-console.sh"
 
