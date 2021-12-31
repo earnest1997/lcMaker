@@ -611,104 +611,8 @@
             </div>
             <el-divider />
           </template>
-          <!-- 表格属性 -->
-          <template v-if="(activeData.__config__.tag || '').includes('el-table')">
-            <el-divider>表格项</el-divider>
-            <draggable
-              :list="activeData.__slot__.columns"
-              :animation="340"
-              group="selectItem"
-              handle=".option-drag"
-            >
-              <div
-                v-for="(item, index) in activeData.__slot__.columns"
-                :key="index"
-                class="select-item"
-              >
-                <div class="left">
-                  <!-- 表单项自带属性 -->
-                  <div class="top inline">
-                    <div class="select-line-icon option-drag">
-                      <i class="el-icon-s-operation" />
-                    </div>
-                    <el-input
-                      v-model="item.label"
-                      placeholder="label"
-                      size="small"
-                    />
-                    <el-input
-                      v-model="item.prop"
-                      placeholder="prop"
-                      size="small"
-                    />
-                    <el-input v-model="item.width" placeholder="表格宽度" size="small" />
-                  </div>
-                  <!-- 表单项自定义属性 -->
-                  <div class="bottom">
-                    <el-form-item label="是否为查询项">
-                      <el-switch v-model="item.search" />
-                    </el-form-item>
-                    <el-select
-                      v-show="item.search"
-                      v-model="selectedVal"
-                      label="查询类型"
-                      placeholder="请选择组件类型"
-                      :style="{ width: '100%' }"
-                      @change="val=>setTableSearch(val,item)"
-                    >
-                      <el-option-group
-                        v-for="group in tagList"
-                        :key="group.label"
-                        :label="group.label"
-                      >
-                        <el-option
-                          v-for="item in group.options"
-                          :key="item.__config__.label"
-                          :label="item.__config__.label"
-                          :value="item.__config__.tagIcon"
-                        >
-                          <svg-icon
-                            class="node-icon"
-                            :icon-class="item.__config__.tagIcon"
-                          />
-                          <span> {{ item.__config__.label }}</span>
-                        </el-option>
-                      </el-option-group>
-                    </el-select>
-                  </div>
-                </div>
-                <div
-                  class="close-btn select-line-icon"
-                  @click="activeData.__slot__.columns.splice(index, 1)"
-                >
-                  <i class="el-icon-remove-outline" />
-                </div>
-              </div>
-            </draggable>
-            <div style="margin-left: 20px">
-              <el-button
-                style="padding-bottom: 0"
-                icon="el-icon-circle-plus-outline"
-                type="text"
-                @click="addTableItem"
-              >
-                添加表格项
-              </el-button>
-            </div>
 
-            <el-form-item label="是否分页">
-              <el-switch v-model="activeData.__config__.isShowPagination" />
-            </el-form-item>
-            <el-form-item v-show="activeData.__config__.isShowPagination" label="分页条数">
-              <el-input-number v-model="tableInfo.pageSize" />
-            </el-form-item>
-          </template>
-
-          <template
-            v-if="
-              ['el-cascader'].includes(activeData.__config__.tag)
-            "
-          >
+          <template v-if="['el-cascader'].includes(activeData.__config__.tag)">
             <el-divider>选项</el-divider>
             <el-form-item
               v-if="activeData.__config__.dataType"
@@ -1167,7 +1071,7 @@
 import { isArray } from 'util'
 import TreeNodeDialog from '@/views/index/TreeNodeDialog'
 import { isNumberStr } from '@/utils/index'
-import IconsDialog from './IconsDialog'
+import IconsDialog from '../IconsDialog'
 import {
   inputComponents,
   selectComponents,
@@ -1204,8 +1108,8 @@ export default {
       dialogVisible: false,
       iconsVisible: false,
       currentIconModel: null,
-      selectedVal:'',
-      tableInfo:{ pageSize:20 },
+      selectedVal: '',
+      tableInfo: { pageSize: 20 },
       dateTypeOptions: [
         {
           label: '日(date)',
@@ -1347,7 +1251,7 @@ export default {
       },
       deep: true
     },
-    'activeData.__config__.isShowPagination':'setTablePagination'
+    'activeData.__config__.isShowPagination': 'setTablePagination'
   },
   methods: {
     // 为表格绑定分页
@@ -1375,7 +1279,7 @@ export default {
       this.activeData.__slot__.columns.push({
         label: '',
         prop: '',
-        width:'unset'
+        width: 'unset'
       })
     },
     addTreeItem() {
@@ -1542,15 +1446,15 @@ export default {
   display: flex;
   border: 1px solid #ebeef5;
   border-radius: 2px;
-  padding:5px;
+  padding: 5px;
   box-sizing: border-box;
-  .inline{
-  display: flex;
+  .inline {
+    display: flex;
   }
-  .el-form-item{
-    margin-bottom:5px;
+  .el-form-item {
+    margin-bottom: 5px;
   }
-  .el-select{
+  .el-select {
     width: 245px;
     margin-left: 30px;
   }

@@ -59,6 +59,9 @@
         <el-button icon="el-icon-view" type="text" @click="showJson">
           查看json
         </el-button>
+        <el-button icon="el-icon-view" type="text" @click="showJson">
+          查看组件数据
+        </el-button>
         <el-button icon="el-icon-download" type="text" @click="download">
           导出vue文件
         </el-button>
@@ -142,6 +145,7 @@
     </div>
 
     <right-panel
+      :type="panelType"
       :activeData="activeData"
       :formConf="formConf"
       :showField="!!drawingList.length || !!drawingContainer.length"
@@ -181,7 +185,7 @@ import ClipboardJS from 'clipboard'
 import render from '@/components/render/render'
 import FormDrawer from './FormDrawer'
 import JsonDrawer from './JsonDrawer'
-import RightPanel from '../RightPanel'
+import RightPanel from '../rightPanel/index'
 import {
   inputComponents,
   selectComponents,
@@ -251,6 +255,7 @@ export default {
       layoutComponents,
       labelWidth: 100,
       drawingList: [],
+      panelType: 'form',
       // 表格
       drawingContainer: [],
       drawingData: {},
@@ -411,7 +416,10 @@ export default {
       }
     },
     activeFormItem(currentItem) {
-      //
+      const {
+        __config__: { tag }
+      } = currentItem
+      this.panelType = tag.includes('table') ? 'container' : 'form'
       this.activeData = currentItem
       this.activeId = currentItem.__config__.formId
     },

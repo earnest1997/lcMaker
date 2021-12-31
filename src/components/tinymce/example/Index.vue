@@ -11,8 +11,6 @@
 <script>
 import Tinymce from '../index.vue'
 
-console.log(8)
-
 export default {
   components: {
     Tinymce
