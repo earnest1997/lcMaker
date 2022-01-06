@@ -52,11 +52,17 @@ $lighterBlue: #409eff;
 }
 
 .left-board {
-  width: 260px;
-  position: absolute;
+  // position: absolute;
+  // min-width:44px;
+  width: max-content;
   left: 0;
   top: 0;
   height: 100vh;
+  // box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+  // background: #eeeff3;
+  &.active + .center-board {
+    flex-basis: calc(100vw - 285px - 380px);
+  }
 }
 .left-scrollbar {
   height: calc(100vh - 42px);
@@ -71,14 +77,18 @@ $lighterBlue: #409eff;
 }
 .center-board {
   height: 100vh;
-  width: auto;
-  margin: 0 350px 0 260px;
+  flex: 1;
+  min-width: 0;
+  // margin: 0 350px 0 50px;
   box-sizing: border-box;
+  .el-scrollbar {
+    background: #fff;
+  }
 }
 .empty-info {
   width: 100%;
-  position:absolute;
-  top:50%;
+  position: absolute;
+  top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
   text-align: center;
@@ -140,10 +150,10 @@ $lighterBlue: #409eff;
   box-sizing: border-box;
   & > .el-form {
     position: relative;
- 
+
     // 69 = 12+15+42
     // height: calc(100vh - 69px);
-    min-height:220px;
+    min-height: 220px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -151,16 +161,16 @@ $lighterBlue: #409eff;
 }
 .drawing-board {
   width: calc(100% - 10px);
-  padding:25px;
+  padding: 25px;
   box-sizing: border-box;
-  margin:5px;
+  margin: 5px;
   border: 1px dashed #606266;
   border-radius: 4px;
-  &.top{
-  min-height:220px;
+  &.top {
+    min-height: 220px;
   }
-  &.bottom{
-    min-height:25vh;
+  &.bottom {
+    min-height: 25vh;
   }
   .components-body {
     padding: 0;
@@ -187,8 +197,8 @@ $lighterBlue: #409eff;
     height: 60px;
     background-color: $selectedColor;
   }
-  .active-container-item{
-    border:1px solid #70c0ff
+  .active-container-item {
+    border: 1px solid #70c0ff;
   }
   .active-from-item {
     & > .el-form-item {

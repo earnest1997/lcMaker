@@ -1,54 +1,56 @@
 <template>
-  <div class="container">
-    <div class="left-board">
-      <div class="logo-wrapper">
-        <div class="logo">
-          <img :src="logo" alt="logo"> Form Generator
-          <a
-            class="github"
-            href="https://github.com/JakHuang/form-generator"
-            target="_blank"
-          >
-            <img src="https://github.githubassets.com/pinned-octocat.svg" alt>
-          </a>
-        </div>
-      </div>
-      <el-scrollbar class="left-scrollbar">
-        <div class="components-list">
-          <div v-for="(item, listIndex) in leftComponents" :key="listIndex">
-            <div class="components-title">
-              <svg-icon iconClass="component" />
-              {{ item.title }}
-            </div>
-            <draggable
-              class="components-draggable"
-              :list="item.list"
-              :group="{
-                name: item.groupName || 'formComponentsGroup',
-                pull: 'clone',
-                put: false
-              }"
-              :clone="cloneComponent"
-              draggable=".components-item"
-              :sort="false"
-              :move="onMoveForm"
-              @end="onEnd"
-            >
-              <div
-                v-for="(element, index) in item.list"
-                :key="index"
-                class="components-item"
-                @click="addComponent(element)"
-              >
-                <div class="components-body">
-                  <svg-icon :iconClass="element.__config__.tagIcon" />
-                  {{ element.__config__.label }}
-                </div>
-              </div>
-            </draggable>
+  <div class="container flex">
+    <div class="left-board" :class="!collapseLeft ? 'active' : ''">
+      <!-- 左侧导航start -->
+      <div class="left-wrapper">
+        <div class="nav">
+          <div class="icon" @click="setCollapseLeft">
+            <!-- <input id="check" type="checkbox"> -->
+            <i v-show="!collapseLeft" class="el-icon-s-unfold" />
+            <i v-show="collapseLeft" class="el-icon-s-fold" />
           </div>
         </div>
-      </el-scrollbar>
+        <el-scrollbar
+          :class="!collapseLeft ? 'active' : ''"
+          class="left-scrollbar"
+        >
+          <div class="components-list">
+            <div v-for="(item, listIndex) in leftComponents" :key="listIndex">
+              <div class="components-title">
+                <svg-icon iconClass="component" />
+                {{ item.title }}
+              </div>
+              <draggable
+                class="components-draggable"
+                :list="item.list"
+                :group="{
+                  name: item.groupName || 'formComponentsGroup',
+                  pull: 'clone',
+                  put: false
+                }"
+                :clone="cloneComponent"
+                draggable=".components-item"
+                :sort="false"
+                :move="onMoveForm"
+                @end="onEnd"
+              >
+                <div
+                  v-for="(element, index) in item.list"
+                  :key="index"
+                  class="components-item"
+                  @click="addComponent(element)"
+                >
+                  <div class="components-body">
+                    <svg-icon :iconClass="element.__config__.tagIcon" />
+                    {{ element.__config__.label }}
+                  </div>
+                </div>
+              </draggable>
+            </div>
+          </div>
+        </el-scrollbar>
+      </div>
+      <!-- 左侧导航end -->
     </div>
 
     <div class="center-board">
@@ -272,6 +274,7 @@ export default {
       activeData: drawingDefalut[0],
       saveDrawingDataDebounce: debounce(340, saveDrawingData),
       saveIdGlobalDebounce: debounce(340, saveIdGlobal),
+      collapseLeft: false,
       leftComponents: [
         {
           title: '输入型组件',
@@ -367,6 +370,9 @@ export default {
     })
   },
   methods: {
+    setCollapseLeft() {
+      this.collapseLeft = !this.collapseLeft
+    },
     setObjectValueReduce(obj, strKeys, data) {
       const arr = strKeys.split('.')
       arr.reduce((pre, item, i) => {
@@ -643,4 +649,39 @@ export default {
 
 <style lang="scss">
 @import '@/styles/home';
+
+.container {
+  display: flex;
+  width: 100vw;
+}
+.left-wrapper {
+  display: flex;
+  .nav {
+    z-index: 1;
+    padding-top: 14px;
+    width: 44px;
+    flex-shrink: 0;
+    text-align: center;
+    height: 100vh;
+    background: #fbfbfb;
+    border-right: 1px solid #ececec;
+    position: relative;
+    i {
+      cursor: pointer;
+    }
+  }
+  .left-scrollbar {
+    transition: all ease-out 0.1s;
+    background: #fff;
+    transform: translate(-100%);
+    width: 0;
+    &.active {
+      width: 240px;
+      transform: translate(0);
+    }
+  }
+}
+.center-board {
+  border: 10px solid #eeeff3;
+}
 </style>

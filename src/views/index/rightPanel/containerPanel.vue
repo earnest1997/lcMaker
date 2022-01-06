@@ -15,6 +15,7 @@
           <el-form-item label="表格数据">
             <el-button
               icon="el-icon-upload"
+              size="mini"
               placeholder="请选择文件，仅支持json格式"
             >
               <input
@@ -22,6 +23,7 @@
                 accept="application/JSON"
                 @change="changeFormData"
               >
+              点击上传文件
             </el-button>
           </el-form-item>
         </el-form>
@@ -38,12 +40,7 @@
           </a>
           <el-scrollbar class="right-scrollbar">
             <!-- 组件属性 -->
-            <el-form
-              v-show="currentTab === 'field' && showField"
-              size="small"
-              label-width="120px"
-            >
-              <el-divider>表格项</el-divider>
+            <el-form size="small" label-width="120px">
               <draggable
                 :list="activeData.__slot__.columns"
                 :animation="340"
@@ -462,14 +459,34 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.right-scrollbar {
+  .el-input--small {
+    margin-bottom: 10px;
+  }
+  .select-item {
+    border: 1px solid #eeeff3;
+    border-radius: 4px;
+    padding: 5px;
+  }
+}
 .right-board {
-  width: 350px;
-  position: absolute;
+  flex-basis: 350px;
+  flex-shrink: 0;
+  min-width: 0;
   right: 0;
   top: 0;
   padding-top: 3px;
+  .el-button {
+    position: relative;
+    cursor: pointer;
+  }
   .el-button input {
     opacity: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
   }
 }
 </style>

@@ -1427,8 +1427,8 @@ export default {
 
 <style lang="scss" scoped>
 .right-board {
-  width: 350px;
-  position: absolute;
+  flex-basis: 350px;
+  flex-shrink: 0;
   right: 0;
   top: 0;
   padding-top: 3px;
