@@ -25,6 +25,9 @@
               >
               点击上传文件
             </el-button>
+            <el-button size="mini" @click="editData">
+              编辑表格数据
+            </el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -55,8 +58,17 @@
                   <div class="left">
                     <!-- 表单项自带属性 -->
                     <div class="top inline">
-                      <div class="select-line-icon option-drag">
-                        <i class="el-icon-s-operation" />
+                      <div class="op">
+                        <div class="select-line-icon option-drag">
+                          <i class="el-icon-s-operation" />
+                        </div>
+
+                        <div
+                          class="close-btn select-line-icon"
+                          @click="activeData.__slot__.columns.splice(index, 1)"
+                        >
+                          <i class="el-icon-remove-outline" />
+                        </div>
                       </div>
                       <el-input
                         v-model="item.label"
@@ -107,12 +119,6 @@
                         </el-option-group>
                       </el-select>
                     </div>
-                  </div>
-                  <div
-                    class="close-btn select-line-icon"
-                    @click="activeData.__slot__.columns.splice(index, 1)"
-                  >
-                    <i class="el-icon-remove-outline" />
                   </div>
                 </div>
               </draggable>
@@ -178,11 +184,18 @@
       :current="activeData[currentIconModel]"
       @select="setIcon"
     />
+    <json-drawer
+      size="60%"
+      :visible.sync="jsonDrawerVisible"
+      :jsonStr="tableData"
+      @refresh="refreshData"
+    />
   </div>
 </template>
 
 <script>
 import { isArray } from 'util'
+import JsonDrawer from '@/views/index/form/JsonDrawer'
 import TreeNodeDialog from '@/views/index/TreeNodeDialog'
 import { isNumberStr } from '@/utils/index'
 import IconsDialog from '../IconsDialog'
@@ -193,6 +206,9 @@ import {
 } from '@/components/generator/config'
 import { saveFormConf } from '@/utils/db'
 import RegTest from './RegTest.vue'
+import { table } from '@/store/index'
+
+const { mutations } = table
 
 const dateTimeFormat = {
   date: 'yyyy-MM-dd',
@@ -212,11 +228,15 @@ export default {
   components: {
     TreeNodeDialog,
     IconsDialog,
-    RegTest
+    RegTest,
+    JsonDrawer
   },
   props: ['showField', 'activeData', 'formConf'],
   data() {
     return {
+      jsonDrawerVisible: false,
+      // 表格数据
+      tableData: '',
       currentTab: 'field',
       currentNode: null,
       dialogVisible: false,
@@ -279,12 +299,30 @@ export default {
       },
       deep: true
     },
+    'activeData.data': {
+      handler(val) {
+        this.tableData = JSON.stringify({ list: val })
+      },
+      immediate: true
+    },
     'activeData.__config__.isShowPagination': 'setTablePagination'
   },
   methods: {
-    changeFormData(file) {
+    refreshData(tableData) {
+      this.activeData.data = tableData?.list || []
+    },
+    editData() {
+      this.jsonDrawerVisible = true
+    },
+    changeFormData(evt) {
+      const file = evt.target.files[0]
       const reader = new FileReader()
-      reader.onload = function (val) {}
+      const { setTableData } = mutations
+      reader.onload = e => {
+        const tableData = e.target.result
+        this.activeData.data = JSON.parse(tableData).list
+      }
+      reader.readAsText(file)
     },
     // 为表格绑定分页
     setTablePagination(isShowPagination, prevShow) {
@@ -460,6 +498,20 @@ export default {
 
 <style lang="scss" scoped>
 .right-scrollbar {
+  .top {
+    .op {
+      display: flex;
+      justify-content: flex-end;
+      padding: 4px 0;
+      > div {
+        cursor: pointer;
+        &:first-child {
+          margin-right: 5px;
+        }
+      }
+    }
+    margin-bottom: 10px;
+  }
   .el-input--small {
     margin-bottom: 10px;
   }

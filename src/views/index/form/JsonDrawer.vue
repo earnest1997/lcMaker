@@ -1,7 +1,12 @@
 <template>
   <div>
-    <el-drawer v-bind="$attrs" v-on="$listeners" @opened="onOpen" @close="onClose">
-      <div class="action-bar" :style="{'text-align': 'left'}">
+    <el-drawer
+      v-bind="$attrs"
+      v-on="$listeners"
+      @opened="onOpen"
+      @close="onClose"
+    >
+      <div class="action-bar" :style="{ 'text-align': 'left' }">
         <span class="bar-btn" @click="refresh">
           <i class="el-icon-refresh" />
           刷新
@@ -14,7 +19,10 @@
           <i class="el-icon-download" />
           导出JSON文件
         </span>
-        <span class="bar-btn delete-btn" @click="$emit('update:visible', false)">
+        <span
+          class="bar-btn delete-btn"
+          @click="$emit('update:visible', false)"
+        >
           <i class="el-icon-circle-close" />
           关闭
         </span>
@@ -47,6 +55,7 @@ export default {
   },
   computed: {},
   watch: {},
+  updated() {},
   created() {},
   mounted() {
     window.addEventListener('keydown', this.preventDefaultSave)
@@ -138,7 +147,7 @@ export default {
 }
 @include action-bar;
 
-.json-editor{
+.json-editor {
   height: calc(100vh - 33px);
 }
 </style>

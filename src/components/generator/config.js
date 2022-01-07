@@ -1,3 +1,8 @@
+import { table } from '@/store'
+
+const {
+  store: { tableData }
+} = table
 // 表单属性【右面板】
 export const formConf = {
   formRef: 'elForm',
@@ -682,7 +687,6 @@ export const layoutComponents = [
         }
       ]
     },
-    data: [],
     __vModel__: { tableData: [] },
     directives: [
       {
@@ -690,6 +694,7 @@ export const layoutComponents = [
         // value: true
       }
     ],
+    data: JSON.parse(tableData).list,
     border: true,
     type: 'default',
     justify: 'start',
