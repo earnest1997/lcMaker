@@ -3,6 +3,21 @@ import { table } from '@/store'
 const {
   store: { tableData }
 } = table
+
+export const tableColumnTagType = {
+  success: '#67C23A',
+  warning: '#E6A23C',
+  danger: '#F56C6C',
+  info: '#909399'
+}
+
+export const tableColumnType = {
+  文本: Symbol('1'),
+  标签: Symbol('2'),
+  长文本: Symbol('3'),
+  图片: Symbol('4'),
+  链接: Symbol('5')
+}
 // 表单属性【右面板】
 export const formConf = {
   formRef: 'elForm',
@@ -656,7 +671,9 @@ export const layoutComponents = [
           },
           prop: 'id',
           label: 'ID',
-          search: true
+          search: true,
+          type: tableColumnType.文本,
+          valMap: [{ value: '取值1', color: 'info' }]
         },
         {
           __config__: {

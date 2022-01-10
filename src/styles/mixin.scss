@@ -4,7 +4,7 @@
     background: #f2fafb;
     padding: 0 15px;
     box-sizing: border-box;
-  
+
     .bar-btn {
       display: inline-block;
       padding: 0 6px;
@@ -32,9 +32,14 @@
   }
 }
 
-@mixin flex($a:center,$j:center,$f:row){
+@mixin flex($a: center, $j: center, $f: row) {
   display: flex;
   align-items: $a;
   justify-content: $j;
   flex-direction: $f;
+}
+
+@mixin wh($w, $h) {
+  width: $w * 1px;
+  height: $h * 1px;
 }

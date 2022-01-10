@@ -57,6 +57,8 @@ textarea {
 
 // home
 .right-scrollbar {
+  height: calc(100vh - 40px);
+  overflow-y: scroll;
   .el-scrollbar__view {
     padding: 12px 18px 15px 15px;
   }

@@ -2,7 +2,7 @@
   <div class="right-board">
     <el-tabs v-model="currentTab" class="center-tabs">
       <el-tab-pane label="表格属性" name="field">
-        <el-form label-width="90px">
+        <el-form label-width="90px" label-position="top" style="padding: 10px">
           <el-form-item label="是否分页">
             <el-switch v-model="activeData.__config__.isShowPagination" />
           </el-form-item>
@@ -25,7 +25,7 @@
               >
               点击上传文件
             </el-button>
-            <el-button size="mini" @click="editData">
+            <el-button size="mini" type="primary" @click="editData">
               编辑表格数据
             </el-button>
           </el-form-item>
@@ -33,31 +33,25 @@
       </el-tab-pane>
       <el-tab-pane label="表格项属性" name="form">
         <div class="field-box">
-          <a
-            class="document-link"
-            target="_blank"
-            :href="documentLink"
-            title="查看组件文档"
-          >
-            <i class="el-icon-link" />
-          </a>
           <el-scrollbar class="right-scrollbar">
             <!-- 组件属性 -->
-            <el-form size="small" label-width="120px">
+            <el-form size="small" label-width="100px" label-position="top">
               <draggable
                 :list="activeData.__slot__.columns"
                 :animation="340"
                 group="selectItem"
                 handle=".option-drag"
               >
-                <div
-                  v-for="(item, index) in activeData.__slot__.columns"
-                  :key="index"
-                  class="select-item"
-                >
-                  <div class="left">
-                    <!-- 表单项自带属性 -->
-                    <div class="top inline">
+                <el-collapse>
+                  <el-collapse-item
+                    v-for="(item, index) in activeData.__slot__.columns"
+                    :key="index"
+                    class="select-item"
+                  >
+                    <template slot="title">
+                      <h5 style="margin-left: 5px; font-size: 14px">
+                        item{{ index + 1 }}
+                      </h5>
                       <div class="op">
                         <div class="select-line-icon option-drag">
                           <i class="el-icon-s-operation" />
@@ -70,63 +64,137 @@
                           <i class="el-icon-remove-outline" />
                         </div>
                       </div>
-                      <el-input
-                        v-model="item.label"
-                        placeholder="label"
-                        size="small"
-                      />
-                      <el-input
-                        v-model="item.prop"
-                        placeholder="prop"
-                        size="small"
-                      />
-                      <el-input
-                        v-model="item.width"
-                        placeholder="表格宽度"
-                        size="small"
-                      />
-                    </div>
-                    <!-- 表单项自定义属性 -->
-                    <div class="bottom">
-                      <el-form-item label="是否为查询项">
-                        <el-switch v-model="item.search" />
-                      </el-form-item>
-                      <el-select
-                        v-show="item.search"
-                        v-model="selectedVal"
-                        label="查询类型"
-                        placeholder="请选择组件类型"
-                        :style="{ width: '100%' }"
-                        @change="val => setTableSearch(val, item)"
-                      >
-                        <el-option-group
-                          v-for="group in tagList"
-                          :key="group.label"
-                          :label="group.label"
-                        >
-                          <el-option
-                            v-for="item in group.options"
-                            :key="item.__config__.label"
-                            :label="item.__config__.label"
-                            :value="item.__config__.tagIcon"
+                    </template>
+                    <div class="left">
+                      <!-- 表单项自带属性 -->
+
+                      <div class="top inline">
+                        <el-form-item label="表格项名">
+                          <el-input
+                            v-model="item.label"
+                            placeholder="label"
+                            size="small"
+                          />
+                        </el-form-item>
+                        <el-form-item label="数据索引">
+                          <el-input
+                            v-model="item.prop"
+                            placeholder="prop"
+                            size="small"
+                          />
+                        </el-form-item>
+
+                        <el-form-item label="表格宽度">
+                          <el-input
+                            v-model="item.width"
+                            placeholder="表格宽度"
+                            size="small"
+                          />
+                        </el-form-item>
+                      </div>
+                      <!-- 表单项自定义属性 -->
+                      <div class="bottom">
+                        <!-- 查询 -->
+                        <el-form-item label="是否为查询项">
+                          <el-switch v-model="item.search" />
+                        </el-form-item>
+                        <!-- 组件类型 -->
+                        <el-form-item label="组件类型">
+                          <el-select
+                            v-show="item.search"
+                            v-model="selectedVal"
+                            label="查询类型"
+                            placeholder="请选择组件类型"
+                            :style="{ width: '100%' }"
+                            size="small"
+                            @change="val => setTableSearch(val, item)"
                           >
-                            <svg-icon
-                              class="node-icon"
-                              :icon-class="item.__config__.tagIcon"
+                            <el-option-group
+                              v-for="group in tagList"
+                              :key="group.label"
+                              :label="group.label"
+                            >
+                              <el-option
+                                v-for="tag in group.options"
+                                :key="tag.__config__.label"
+                                :label="tag.__config__.label"
+                                :value="tag.__config__.tagIcon"
+                              >
+                                <svg-icon
+                                  class="node-icon"
+                                  :icon-class="tag.__config__.tagIcon"
+                                />
+                                <span> {{ tag.__config__.label }}</span>
+                              </el-option>
+                            </el-option-group>
+                          </el-select>
+                        </el-form-item>
+                        <!-- 类型 -->
+
+                        <el-form-item label="值的类型">
+                          <el-select
+                            v-model="item.type"
+                            placeholder="请选择值的类型"
+                            size="small"
+                          >
+                            <el-option
+                              v-for="type in tableColumnTypes"
+                              :key="type.value"
+                              :label="type.label"
+                              :value="type.value"
                             />
-                            <span> {{ item.__config__.label }}</span>
-                          </el-option>
-                        </el-option-group>
-                      </el-select>
+                          </el-select>
+                        </el-form-item>
+                        <!-- 取值 -->
+
+                        <!-- tag color -->
+
+                        <el-form-item label="取值">
+                          <div class="inline">
+                            <div
+                              v-for="(val, index) in item.valMap"
+                              :key="val.value"
+                            >
+                              <el-dropdown
+                                @command="colorVal => (val.color = colorVal)"
+                              >
+                                <el-tag :type="val.color">
+                                  {{ val.value
+                                  }}<i
+                                    class="el-icon-close"
+                                    @click="removeTag(index, item.valMap)"
+                                  />
+                                </el-tag>
+                                <el-dropdown-menu slot="dropdown">
+                                  <el-dropdown-item
+                                    v-for="color in tagColors"
+                                    :key="color.label"
+                                    :command="color.label"
+                                  >
+                                    <span
+                                      :style="`background:${color.value};width:10px;height:10px;display:inline-block;border-radius:4px;`"
+                                    />&nbsp;{{ color.label }}
+                                  </el-dropdown-item>
+                                </el-dropdown-menu>
+                              </el-dropdown>
+                            </div>
+                            <div
+                              class="add-tag"
+                              :contenteditable="true"
+                              @blur="e => addNewTag(e, item.valMap)"
+                            />
+                          </div>
+                        </el-form-item>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </el-collapse-item>
+                </el-collapse>
               </draggable>
-              <div style="margin-left: 20px">
+              <div style="text-align: right; margin: 10px 0">
                 <el-button
-                  style="padding-bottom: 0"
                   icon="el-icon-circle-plus-outline"
-                  type="text"
+                  type="primary"
+                  size="mini"
                   @click="addTableItem"
                 >
                   添加表格项
@@ -202,7 +270,9 @@ import IconsDialog from '../IconsDialog'
 import {
   inputComponents,
   selectComponents,
-  layoutComponents
+  layoutComponents,
+  tableColumnType,
+  tableColumnTagType
 } from '@/components/generator/config'
 import { saveFormConf } from '@/utils/db'
 import RegTest from './RegTest.vue'
@@ -224,6 +294,14 @@ const dateTimeFormat = {
 // 使changeRenderKey在目标组件改变时可用
 const needRerenderList = ['tinymce']
 
+const tableColumnTypes = Object.entries(tableColumnType).map(
+  ([label, value]) => ({ label, value })
+)
+const tagColors = Object.entries(tableColumnTagType).map(([label, value]) => ({
+  label,
+  value
+}))
+
 export default {
   components: {
     TreeNodeDialog,
@@ -243,7 +321,11 @@ export default {
       iconsVisible: false,
       currentIconModel: null,
       selectedVal: '',
-      tableInfo: { pageSize: 20 }
+      tableInfo: { pageSize: 20 },
+      tableColumnTypes,
+      tableColumnType,
+      tagColors,
+      statusMap: {}
     }
   },
   computed: {
@@ -308,6 +390,16 @@ export default {
     'activeData.__config__.isShowPagination': 'setTablePagination'
   },
   methods: {
+    removeTag(index, valMap) {
+      valMap.splice(index, 1)
+    },
+    addNewTag(e, valMap) {
+      const val = e.target.textContent
+
+      if (!val) return
+      valMap.push({ value: val, color: 'info' })
+      e.target.textContent = ''
+    },
     refreshData(tableData) {
       this.activeData.data = tableData?.list || []
     },
@@ -497,30 +589,63 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.right-scrollbar {
-  .top {
-    .op {
-      display: flex;
-      justify-content: flex-end;
-      padding: 4px 0;
-      > div {
-        cursor: pointer;
-        &:first-child {
-          margin-right: 5px;
-        }
-      }
+@import '@/styles/common';
+
+.add-tag {
+  display: inline-block;
+  width: fit-content;
+  min-width: 70px;
+  height: 30px;
+  padding: 8px 6px;
+  /* line-height:30px; */
+  position: relative;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: #606266;
+  font-size: 12px;
+  line-height: 1;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:not(:focus) {
+    color: transparent;
+    cursor: pointer;
+
+    &::after {
+      z-index: 1;
+      content: '➕新值';
+      white-space: nowrap;
+
+      color: #606266;
+      font-size: 12px;
+      @extend %absolute-center;
     }
+  }
+}
+
+.right-scrollbar {
+  .bottom .el-select {
     margin-bottom: 10px;
   }
+
   .el-input--small {
     margin-bottom: 10px;
   }
+
   .select-item {
     border: 1px solid #eeeff3;
     border-radius: 4px;
-    padding: 5px;
+    padding: 10px;
+    background: #fbfbfb;
+    &:not(:last-child) {
+      margin-bottom: 10px;
+    }
   }
 }
+
 .right-board {
   flex-basis: 350px;
   flex-shrink: 0;
@@ -528,10 +653,12 @@ export default {
   right: 0;
   top: 0;
   padding-top: 3px;
+
   .el-button {
     position: relative;
     cursor: pointer;
   }
+
   .el-button input {
     opacity: 0;
     position: absolute;
@@ -539,6 +666,57 @@ export default {
     right: 0;
     bottom: 0;
     left: 0;
+  }
+}
+</style>
+<style lang="scss">
+@import '@/styles/common';
+
+/* .right-scrollbar { */
+.el-collapse-item__arrow {
+  margin: 0 !important;
+}
+.el-collapse-item__wrap,
+.el-collapse-item__header {
+  background: none;
+}
+
+.el-collapse-item {
+  > h5 {
+    margin-right: auto;
+    margin-left: 10px;
+  }
+
+  .op {
+    margin-left: auto;
+    display: flex;
+    justify-content: flex-end;
+    padding: 4px 0;
+
+    > div {
+      cursor: pointer;
+
+      &:first-child {
+        margin-right: 5px;
+      }
+    }
+  }
+}
+
+/* } */
+
+.inline {
+  .el-icon-close {
+    &:hover {
+      display: inline-block;
+      @include wh(15, 15);
+      line-heigth: 15px;
+      text-align: center;
+      font-size: 12px;
+      border-radius: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+    }
   }
 }
 </style>
