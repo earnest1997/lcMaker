@@ -667,12 +667,13 @@ export const layoutComponents = [
           __config__: {
             layout: 'raw',
             tag: 'el-table-column',
-            renderKey: 15957617660153
+            renderKey: 15957617660153,
+            search: true
           },
           prop: 'id',
           label: 'ID',
-          search: true,
           type: tableColumnType.文本,
+          btnGroup: [],
           valMap: [{ value: '取值1', color: 'info' }]
         },
         {
@@ -681,6 +682,8 @@ export const layoutComponents = [
             tag: 'el-table-column',
             renderKey: 1595774496335,
             search: false,
+            isOperationCol: true,
+            btnGroup: [{ value: '查看', color: 'primary' }],
             children: [
               {
                 __config__: {

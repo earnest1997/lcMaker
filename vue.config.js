@@ -51,6 +51,9 @@ module.exports = {
       }
     }
   },
+  css: {
+    requireModuleExtension: true
+  },
   chainWebpack(config) {
     // set svg-sprite-loader
 

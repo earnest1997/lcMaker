@@ -126,9 +126,12 @@
           :list="drawingContainer"
           group="containerGroup"
         >
+          <!-- <div v-for="(item, index) in drawingContainer">
+            {{ JSON.stringify(item) }}
+          </div> -->
           <NormalDragItem
             v-for="(item, index) in drawingContainer"
-            :key="`normal-${item.renderKey || item.tag}`"
+            :key="`normal-${item.__config__.renderKey || item.tag}`"
             :group="drawingContainer"
             :drawingList="drawingContainer"
             :currentItem="item"
@@ -148,7 +151,7 @@
 
     <right-panel
       :type="panelType"
-      :activeData="activeData"
+      :activeData.sync="activeData"
       :formConf="formConf"
       :showField="!!drawingList.length || !!drawingContainer.length"
       @tag-change="tagChange"

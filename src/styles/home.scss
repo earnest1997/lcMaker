@@ -97,6 +97,9 @@ $lighterBlue: #409eff;
   letter-spacing: 4px;
 }
 .action-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: scroll;
   position: relative;
   background: #fbfbfb;
   height: 42px;
@@ -108,6 +111,9 @@ $lighterBlue: #409eff;
   border-left: none;
   .delete-btn {
     color: #f56c6c;
+  }
+  ::-webkit-scrollbar {
+    display: none; /* Chrome Safari */
   }
 }
 .logo-wrapper {

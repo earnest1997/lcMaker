@@ -1,0 +1,14 @@
+$colors: (
+  danger: '#F56C6C',
+  info: '#909399',
+  warning: '#E6A23C',
+  success: '#67C23A',
+  default: '#fff',
+  primary: '#409EFF'
+);
+
+:export {
+  @each $color, $val in $colors {
+    #{unquote($color)}: unquote($val);
+  }
+}

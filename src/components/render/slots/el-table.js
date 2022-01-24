@@ -35,7 +35,7 @@ export default {
           }
         }
       }
-      const child = list.push(
+      list.push(
         <el-table-column
           {...{
             props: {

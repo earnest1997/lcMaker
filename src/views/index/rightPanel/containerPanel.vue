@@ -1,266 +1,3 @@
-<template>
-  <div class="right-board">
-    <el-tabs v-model="currentTab" class="center-tabs">
-      <el-tab-pane label="表格属性" name="field">
-        <el-form label-width="90px" label-position="top" style="padding: 10px">
-          <el-form-item label="是否分页">
-            <el-switch v-model="activeData.__config__.isShowPagination" />
-          </el-form-item>
-          <el-form-item
-            v-show="activeData.__config__.isShowPagination"
-            label="分页条数"
-          >
-            <el-input-number v-model="tableInfo.pageSize" />
-          </el-form-item>
-          <el-form-item label="表格数据">
-            <el-button
-              icon="el-icon-upload"
-              size="mini"
-              placeholder="请选择文件，仅支持json格式"
-            >
-              <input
-                type="file"
-                accept="application/JSON"
-                @change="changeFormData"
-              >
-              点击上传文件
-            </el-button>
-            <el-button size="mini" type="primary" @click="editData">
-              编辑表格数据
-            </el-button>
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
-      <el-tab-pane label="表格项属性" name="form">
-        <div class="field-box">
-          <el-scrollbar class="right-scrollbar">
-            <!-- 组件属性 -->
-            <el-form size="small" label-width="100px" label-position="top">
-              <draggable
-                :list="activeData.__slot__.columns"
-                :animation="340"
-                group="selectItem"
-                handle=".option-drag"
-              >
-                <el-collapse>
-                  <el-collapse-item
-                    v-for="(item, index) in activeData.__slot__.columns"
-                    :key="index"
-                    class="select-item"
-                  >
-                    <template slot="title">
-                      <h5 style="margin-left: 5px; font-size: 14px">
-                        item{{ index + 1 }}
-                      </h5>
-                      <div class="op">
-                        <div class="select-line-icon option-drag">
-                          <i class="el-icon-s-operation" />
-                        </div>
-
-                        <div
-                          class="close-btn select-line-icon"
-                          @click="activeData.__slot__.columns.splice(index, 1)"
-                        >
-                          <i class="el-icon-remove-outline" />
-                        </div>
-                      </div>
-                    </template>
-                    <div class="left">
-                      <!-- 表单项自带属性 -->
-
-                      <div class="top inline">
-                        <el-form-item label="表格项名">
-                          <el-input
-                            v-model="item.label"
-                            placeholder="label"
-                            size="small"
-                          />
-                        </el-form-item>
-                        <el-form-item label="数据索引">
-                          <el-input
-                            v-model="item.prop"
-                            placeholder="prop"
-                            size="small"
-                          />
-                        </el-form-item>
-
-                        <el-form-item label="表格宽度">
-                          <el-input
-                            v-model="item.width"
-                            placeholder="表格宽度"
-                            size="small"
-                          />
-                        </el-form-item>
-                      </div>
-                      <!-- 表单项自定义属性 -->
-                      <div class="bottom">
-                        <!-- 查询 -->
-                        <el-form-item label="是否为查询项">
-                          <el-switch v-model="item.search" />
-                        </el-form-item>
-                        <!-- 组件类型 -->
-                        <el-form-item label="组件类型">
-                          <el-select
-                            v-show="item.search"
-                            v-model="selectedVal"
-                            label="查询类型"
-                            placeholder="请选择组件类型"
-                            :style="{ width: '100%' }"
-                            size="small"
-                            @change="val => setTableSearch(val, item)"
-                          >
-                            <el-option-group
-                              v-for="group in tagList"
-                              :key="group.label"
-                              :label="group.label"
-                            >
-                              <el-option
-                                v-for="tag in group.options"
-                                :key="tag.__config__.label"
-                                :label="tag.__config__.label"
-                                :value="tag.__config__.tagIcon"
-                              >
-                                <svg-icon
-                                  class="node-icon"
-                                  :icon-class="tag.__config__.tagIcon"
-                                />
-                                <span> {{ tag.__config__.label }}</span>
-                              </el-option>
-                            </el-option-group>
-                          </el-select>
-                        </el-form-item>
-                        <!-- 类型 -->
-
-                        <el-form-item label="值的类型">
-                          <el-select
-                            v-model="item.type"
-                            placeholder="请选择值的类型"
-                            size="small"
-                          >
-                            <el-option
-                              v-for="type in tableColumnTypes"
-                              :key="type.value"
-                              :label="type.label"
-                              :value="type.value"
-                            />
-                          </el-select>
-                        </el-form-item>
-                        <!-- 取值 -->
-
-                        <!-- tag color -->
-
-                        <el-form-item label="取值">
-                          <div class="inline">
-                            <div
-                              v-for="(val, index) in item.valMap"
-                              :key="val.value"
-                            >
-                              <el-dropdown
-                                @command="colorVal => (val.color = colorVal)"
-                              >
-                                <el-tag :type="val.color">
-                                  {{ val.value
-                                  }}<i
-                                    class="el-icon-close"
-                                    @click="removeTag(index, item.valMap)"
-                                  />
-                                </el-tag>
-                                <el-dropdown-menu slot="dropdown">
-                                  <el-dropdown-item
-                                    v-for="color in tagColors"
-                                    :key="color.label"
-                                    :command="color.label"
-                                  >
-                                    <span
-                                      :style="`background:${color.value};width:10px;height:10px;display:inline-block;border-radius:4px;`"
-                                    />&nbsp;{{ color.label }}
-                                  </el-dropdown-item>
-                                </el-dropdown-menu>
-                              </el-dropdown>
-                            </div>
-                            <div
-                              class="add-tag"
-                              :contenteditable="true"
-                              @blur="e => addNewTag(e, item.valMap)"
-                            />
-                          </div>
-                        </el-form-item>
-                      </div>
-                    </div>
-                  </el-collapse-item>
-                </el-collapse>
-              </draggable>
-              <div style="text-align: right; margin: 10px 0">
-                <el-button
-                  icon="el-icon-circle-plus-outline"
-                  type="primary"
-                  size="mini"
-                  @click="addTableItem"
-                >
-                  添加表格项
-                </el-button>
-              </div>
-
-              <template v-if="Array.isArray(activeData.__config__.regList)">
-                <el-divider>正则校验</el-divider>
-                <RegTest />
-                <div
-                  v-for="(item, index) in activeData.__config__.regList"
-                  :key="index"
-                  class="reg-item"
-                >
-                  <span
-                    class="close-btn"
-                    @click="activeData.__config__.regList.splice(index, 1)"
-                  >
-                    <i class="el-icon-close" />
-                  </span>
-                  <el-form-item label="表达式">
-                    <el-input v-model="item.pattern" placeholder="请输入正则" />
-                  </el-form-item>
-                  <el-form-item label="错误提示" style="margin-bottom: 0">
-                    <el-input
-                      v-model="item.message"
-                      placeholder="请输入错误提示"
-                    />
-                  </el-form-item>
-                </div>
-                <div style="margin-left: 20px">
-                  <el-button
-                    icon="el-icon-circle-plus-outline"
-                    type="text"
-                    @click="addReg"
-                  >
-                    添加规则
-                  </el-button>
-                </div>
-              </template>
-              <el-form-item label="校验模型">
-                <el-input
-                  v-model="formConf.formRules"
-                  placeholder="请输入校验模型"
-                />
-              </el-form-item>
-            </el-form>
-          </el-scrollbar>
-        </div>
-      </el-tab-pane>
-    </el-tabs>
-
-    <icons-dialog
-      :visible.sync="iconsVisible"
-      :current="activeData[currentIconModel]"
-      @select="setIcon"
-    />
-    <json-drawer
-      size="60%"
-      :visible.sync="jsonDrawerVisible"
-      :jsonStr="tableData"
-      @refresh="refreshData"
-    />
-  </div>
-</template>
-
 <script>
 import { isArray } from 'util'
 import JsonDrawer from '@/views/index/form/JsonDrawer'
@@ -277,8 +14,26 @@ import {
 import { saveFormConf } from '@/utils/db'
 import RegTest from './RegTest.vue'
 import { table } from '@/store/index'
+import cssVars from '@/styles/variables.module.scss'
 
-const { mutations } = table
+const {
+  danger, info, warning, success, default: main 
+} = cssVars
+
+// 按钮类型
+const btnTypes = Object.entries({
+  danger,
+  info,
+  warning,
+  success,
+  main
+}).reduce((prev, [k, v]) => {
+  prev.push({
+    label: k,
+    color: v
+  })
+  return prev
+}, [])
 
 const dateTimeFormat = {
   date: 'yyyy-MM-dd',
@@ -291,9 +46,6 @@ const dateTimeFormat = {
   datetimerange: 'yyyy-MM-dd HH:mm:ss'
 }
 
-// 使changeRenderKey在目标组件改变时可用
-const needRerenderList = ['tinymce']
-
 const tableColumnTypes = Object.entries(tableColumnType).map(
   ([label, value]) => ({ label, value })
 )
@@ -302,13 +54,12 @@ const tagColors = Object.entries(tableColumnTagType).map(([label, value]) => ({
   value
 }))
 
+// 使changeRenderKey在目标组件改变时可用
+const needRerenderList = ['tinymce']
+
 export default {
-  components: {
-    TreeNodeDialog,
-    IconsDialog,
-    RegTest,
-    JsonDrawer
-  },
+  name: 'FormGeneratorContainerpanel',
+
   props: ['showField', 'activeData', 'formConf'],
   data() {
     return {
@@ -322,10 +73,12 @@ export default {
       currentIconModel: null,
       selectedVal: '',
       tableInfo: { pageSize: 20 },
+      // 表格项数据
       tableColumnTypes,
       tableColumnType,
       tagColors,
-      statusMap: {}
+      statusMap: {},
+      btnTypes: Object.freeze(btnTypes)
     }
   },
   computed: {
@@ -389,17 +142,35 @@ export default {
     },
     'activeData.__config__.isShowPagination': 'setTablePagination'
   },
-  methods: {
-    removeTag(index, valMap) {
-      valMap.splice(index, 1)
-    },
-    addNewTag(e, valMap) {
-      const val = e.target.textContent
 
-      if (!val) return
-      valMap.push({ value: val, color: 'info' })
-      e.target.textContent = ''
+  mounted() {},
+
+  methods: {
+    removeItem(index, map) {
+      map.splice(index, 1)
     },
+    addNewItem(e, item, key) {
+      const val = e.target.textContent
+      if (!val) return
+      item[key] = item[key] || []
+      item[key].push({ value: val, color: 'info' })
+      item = { ...item }
+      e.target.textContent = ''
+      this.$forceUpdate()
+    },
+    // removeBtn(index, btnGroup) {
+    //     btnGroup.splice(index, 1)
+    // },
+    // addNewBtn(e, item) {
+
+    // },
+    // addNewTag(e, valMap) {
+    //     const val = e.target.textContent
+
+    //     if (!val) return
+    //     valMap.push({ value: val, color: 'info' })
+    //     e.target.textContent = ''
+    // },
     refreshData(tableData) {
       this.activeData.data = tableData?.list || []
     },
@@ -409,7 +180,6 @@ export default {
     changeFormData(evt) {
       const file = evt.target.files[0]
       const reader = new FileReader()
-      const { setTableData } = mutations
       reader.onload = e => {
         const tableData = e.target.result
         this.activeData.data = JSON.parse(tableData).list
@@ -456,12 +226,12 @@ export default {
           <span>{node.label}</span>
           <span class="node-operation">
             <i
-              on-click={() => this.append(data)}
+              onClick={() => this.append(data)}
               class="el-icon-plus"
               title="添加"
             ></i>
             <i
-              on-click={() => this.remove(node, data)}
+              onClick={() => this.remove(node, data)}
               class="el-icon-delete"
               title="删除"
             ></i>
@@ -583,7 +353,261 @@ export default {
       if (needRerenderList.includes(this.activeData.__config__.tag)) {
         this.activeData.__config__.renderKey = +new Date()
       }
+    },
+    renderBaseInfo(h) {
+      return (
+        <el-tab-pane label="表格属性" name="field">
+          <el-form
+            label-width="90px"
+            label-position="top"
+            style="padding: 10px"
+          >
+            <el-form-item label="是否分页">
+              <el-switch value={this.activeData.__config__.isShowPagination} />
+            </el-form-item>
+            {this.activeData.__config__.isShowPagination && (
+              <el-form-item label="分页条数">
+                <el-input-number value={this.tableInfo.pageSize} />
+              </el-form-item>
+            )}
+            <el-form-item label="表格数据">
+              <el-button
+                icon="el-icon-upload"
+                size="mini"
+                placeholder="请选择文件，仅支持json格式"
+              >
+                <input
+                  type="file"
+                  accept="application/JSON"
+                  onChange={this.changeFormData}
+                />
+                点击上传文件
+              </el-button>
+              <el-button
+                size="mini"
+                type="primary"
+                onClick={() => this.editData()}
+              >
+                编辑表格数据
+              </el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+      )
+    },
+    renderDynamicItems(h, {
+      item, map, tagMap, mapKey, labelKey = '取值' 
+    }) {
+      const [tagMapKey, tagMapVal] = Object.entries(tagMap)[0]
+      const dropDownItems = tagMapVal.map(color => (
+        <el-dropdown-item key={color.label} command={color.label}>
+          <span
+            style={`background:${color.value};width:10px;height:10px;display:inline-block;border-radius:4px;`}
+          />
+          &nbsp;{color.label}
+        </el-dropdown-item>
+      ))
+
+      const itemMap = (map || []).map((item, index) => (
+        <el-dropdown
+          onCommand={colorVal => {
+            item.color = colorVal
+          }}
+        >
+          <el-tag type={item.color}>
+            {item.value}
+            <i
+              class="el-icon-close"
+              onClick={() => this.removeItem(index, map)}
+            />
+          </el-tag>
+          <el-dropdown-menu slot="dropdown">{dropDownItems}</el-dropdown-menu>
+        </el-dropdown>
+      ))
+
+      return (
+        <el-form-item label={labelKey}>
+          <div class="inline">
+            {itemMap}
+            <div
+              class="add-tag"
+              contenteditable={true}
+              onBlur={e => this.addNewItem(e, item, mapKey)}
+            />
+          </div>
+        </el-form-item>
+      )
+    },
+    renderTableItemBaseInfo(h, item, index) {
+      const comps = this.tagList.map(group => (
+        <el-option-group key={group.label} label={group.label}>
+          {group.options.map(tag => (
+            <el-option
+              key={tag.__config__?.label}
+              label={tag.__config__?.label}
+              value={tag.__config__.tagIcon}
+            >
+              <svg-icon class="node-icon" icon-class={tag.__config__.tagIcon} />
+              <span> {tag.__config__?.label}</span>
+            </el-option>
+          ))}
+        </el-option-group>
+      ))
+      return (
+        <div class="top inline">
+          <el-form-item label="表格项名">
+            <el-input value={item.label} placeholder="label" size="small" />
+          </el-form-item>
+          <el-form-item label="数据索引">
+            <el-input value={item.prop} placeholder="prop" size="small" />
+          </el-form-item>
+
+          <el-form-item label="表格宽度">
+            <el-input value={item.width} placeholder="表格宽度" size="small" />
+          </el-form-item>
+          <el-form-item label="是否为查询项">
+            <el-switch
+              value={item.__config__.search}
+              onChange={val => {
+                item.__config__.search = val
+              }}
+            />
+          </el-form-item>
+          <el-form-item label="组件类型">
+            {item.__config__.search && (
+              <el-select
+                value={this.selectedVal}
+                label="查询类型"
+                placeholder="请选择组件类型"
+                style="width: '100%'"
+                size="small"
+                onChange={val => this.setTableSearch(val, item)}
+              >
+                {comps}
+              </el-select>
+            )}
+          </el-form-item>
+        </div>
+      )
+    },
+    renderTableItem(h, item, index) {
+      const options = tableColumnTypes.map(type => (
+        <el-option key={type.value} label={type.label} value={type.value} />
+      ))
+      const opBtns = (
+        <div class="inline">
+          {' '}
+          <h5 style="margin-left: 5px; font-size: 14px">item{index + 1}</h5>
+          <div class="op">
+            <div class="select-line-icon option-drag">
+              <i class="el-icon-s-operation" />
+            </div>
+
+            <div
+              class="close-btn select-line-icon"
+              onClick={() => {
+                this.activeData.__slot__.columns.splice(index, 1)
+              }}
+            >
+              <i class="el-icon-remove-outline" />
+            </div>
+          </div>
+        </div>
+      )
+      const scopedSlots = {
+        title() {
+          return opBtns
+        }
+      }
+      return (
+        <el-collapse-item class="select-item" {...{ scopedSlots }}>
+          <div class="table-item">
+            {this.renderTableItemBaseInfo(h, item, index)}
+            <div class="bottom">
+              <el-form-item label="值的类型">
+                <el-select
+                  value={item.type}
+                  placeholder="请选择值的类型"
+                  size="small"
+                >
+                  {options}
+                </el-select>
+              </el-form-item>
+              {this.renderDynamicItems(h, {
+                item,
+                map: item.valMap,
+                tagMap: { tagColors },
+                mapKey: 'valMap',
+                labelKey: '取值'
+              })}
+              <el-form-item label="是否为操作项">
+                <el-switch value={item.__config__.isOperationCol} />
+              </el-form-item>
+              {item.__config__.isOperationCol
+                && this.renderDynamicItems(h, {
+                  item,
+                  map: item.btnGroup,
+                  tagMap: { btnTypes },
+                  mapKey: 'btnGroup',
+                  labelKey: '按钮组'
+                })}
+            </div>
+          </div>
+        </el-collapse-item>
+      )
+    },
+    renderTableItemBottom(h) {
+      return (
+        <div style="text-align: right; margin: 10px 0">
+          <el-button
+            icon="el-icon-circle-plus-outline"
+            type="primary"
+            size="mini"
+            onClick={() => this.addTableItem()}
+          >
+            添加表格项
+          </el-button>
+        </div>
+      )
     }
+  },
+  render(h) {
+    const tableItems = this.activeData.__slot__?.columns.map((item, index) => this.renderTableItem(h, item, index))
+    return (
+      <div class="right-board">
+        <el-tabs value={this.currentTab} class="center-tabs">
+          {this.renderBaseInfo(h)}
+          <el-tab-pane label="表格项属性" name="form">
+            <div class="field-box">
+              <el-scrollbar class="right-scrollbar">
+                <el-form size="small" label-width="100px" label-position="top">
+                  <draggable
+                    list={this.activeData.__slot__.columns}
+                    animation={340}
+                    group="selectItem"
+                    handle=".option-drag"
+                  >
+                    <el-collapse>{tableItems}</el-collapse>
+                  </draggable>
+                </el-form>
+                {this.renderTableItemBottom(h)}
+              </el-scrollbar>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+        <IconsDialog
+          visible$sync={this.iconsVisible}
+          current={this.activeData[this.currentIconModel]}
+          onSelect={this.setIcon}
+        />
+        <JsonDrawer
+          size="60%"
+          visible$sync={this.jsonDrawerVisible}
+          jsonStr={this.tableData}
+          onRefresh={this.refreshData}
+        />
+      </div>
+    )
   }
 }
 </script>
@@ -640,6 +664,7 @@ export default {
     border-radius: 4px;
     padding: 10px;
     background: #fbfbfb;
+
     &:not(:last-child) {
       margin-bottom: 10px;
     }
@@ -670,18 +695,21 @@ export default {
 }
 </style>
 <style lang="scss">
-@import '@/styles/common';
+@import '@/styles/common.scss';
 
 /* .right-scrollbar { */
 .el-collapse-item__arrow {
   margin: 0 !important;
 }
+
 .el-collapse-item__wrap,
 .el-collapse-item__header {
   background: none;
 }
 
-.el-collapse-item {
+.el-collapse-item__header .inline {
+  width: 100%;
+
   > h5 {
     margin-right: auto;
     margin-left: 10px;
@@ -692,6 +720,7 @@ export default {
     display: flex;
     justify-content: flex-end;
     padding: 4px 0;
+    margin-bottom: 0px;
 
     > div {
       cursor: pointer;
