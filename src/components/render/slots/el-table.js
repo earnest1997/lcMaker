@@ -7,7 +7,7 @@ const renderCol = (h, {
   const imgDom = <img src={data} style="width:100px;height:100px;" />
   const linkDom = <a href={data}>{data}</a>
   const btns = btnGroup?.map(({ value, color }) => (<el-button type={color} size='mini'>{value}</el-button>))
-  console.log(btns, 'cncn')
+  
   type = isOperationCol ? '操作' : type
   switch (type) {
     case tableColumnType.标签:

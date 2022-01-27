@@ -533,7 +533,7 @@ export default {
           return opBtns
         }
       }
-      console.log(item.__config__, 'cnm', item)
+      
       const { __config__ } = item
       const { isOperationCol } = __config__ || {}
       return (
