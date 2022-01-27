@@ -1,20 +1,14 @@
 <script>
-import Container from './containerPanel'
+import TablePanel from './container/tablePanel'
+import PaginationPanel from './container/paginationPanel'
 import FormPanel from './formPanel'
 
+const components = { TablePanel, PaginationPanel, FormPanel }
 export default {
-  components: { Container, FormPanel },
-  props: ['showField', 'activeData', 'formConf', 'type'],
   render(h) {
-    const props = {
-      activeData: this.activeData,
-      formConf: this.formConf,
-      showField: this.showField
-    }
-    if (this.type === 'container') {
-      return <Container {...{ props }} />
-    }
-    return <FormPanel {...{ props }} />
+    const compName = `${this.$attrs.type.replace(/\w/, $1 => $1.toUpperCase())}Panel`
+    const comp = components[compName]
+    return <comp {...{ props:this.$attrs, on:this.$listeners }} />
   }
 }
 </script>

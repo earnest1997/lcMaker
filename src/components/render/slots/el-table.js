@@ -1,9 +1,14 @@
 import { tableColumnType } from '@/components/generator/config'
 
-const renderCol = (h, { type, data, color }) => {
+const renderCol = (h, {
+  type, data, color, isOperationCol, btnGroup
+}) => {
   const tagDom = <el-tag type={color}>{data}</el-tag>
   const imgDom = <img src={data} style="width:100px;height:100px;" />
   const linkDom = <a href={data}>{data}</a>
+  const btns = btnGroup?.map(({ value, color }) => (<el-button type={color} size='mini'>{value}</el-button>))
+  console.log(btns, 'cncn')
+  type = isOperationCol ? '操作' : type
   switch (type) {
     case tableColumnType.标签:
       return tagDom
@@ -11,6 +16,8 @@ const renderCol = (h, { type, data, color }) => {
       return imgDom
     case tableColumnType.链接:
       return linkDom
+    case '操作':
+      return <div>{btns}</div>
     default:
       return data
   }
@@ -21,8 +28,9 @@ export default {
     const list = []
     conf.__slot__.columns.forEach(item => {
       const {
-        width, prop, label, type, valMap 
+        width, prop, label, __config__:{ type, valMap }
       } = item
+      const { __config__ } = item
 
       const isOverflow = tableColumnType.长文本 === type
 
@@ -31,7 +39,9 @@ export default {
           default(scope) {
             const data = scope.row[prop]
             const color = valMap?.find(item => item.value === data)?.color || 'info'
-            return renderCol(h, { type, color, data })
+            return renderCol(h, {
+              type, color, data, ...__config__ 
+            })
           }
         }
       }

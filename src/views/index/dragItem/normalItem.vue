@@ -1,6 +1,7 @@
 <script>
 import draggable from 'vuedraggable'
 import render from '@/components/render/render'
+import { classNames } from '@/utils/comp'
 
 const components = {
   itemBtns(h, currentItem, index, list) {
@@ -64,14 +65,16 @@ const layouts = {
   // },
   raw(h, currentItem, index, list) {
     const config = currentItem.__config__
+    const { isSideComp } = config
     const { activeItem } = this.$listeners
     let className = this.activeId === config.formId
       ? 'drawing-item active-container-item'
       : 'drawing-item'
+    const cls = { 'side-comp':isSideComp, [className]:true }
     const child = renderChildren.apply(this, arguments)
     return (
       <div span={config.span}
-            class={className}
+            class={cls}
             onClick={event => {
               activeItem(currentItem)
               event.stopPropagation()
@@ -128,4 +131,10 @@ export default {
   }
 }
 </script>
+<style scoped lang='scss'>
+  .side-comp{
+    margin-top:10px;
+    pointer-events: none;
+  }
+</style>
 

@@ -205,7 +205,7 @@ $lighterBlue: #409eff;
     background-color: $selectedColor;
   }
   .active-container-item {
-    border: 1px solid #70c0ff;
+    outline: 1px solid #70c0ff;
   }
   .active-from-item {
     & > .el-form-item {

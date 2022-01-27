@@ -151,6 +151,7 @@
 
     <right-panel
       :type="panelType"
+      :drawingList.sync="drawingContainer"
       :activeData.sync="activeData"
       :formConf="formConf"
       :showField="!!drawingList.length || !!drawingContainer.length"
@@ -290,7 +291,7 @@ export default {
         {
           title: '布局型组件',
           groupName: 'containerGroup',
-          list: layoutComponents
+          list: layoutComponents.filter(item => !item.__config__.isSideComp)
         }
         // {
         //   title: '业务型组件',
@@ -428,7 +429,8 @@ export default {
       const {
         __config__: { tag }
       } = currentItem
-      this.panelType = tag.includes('table') ? 'container' : 'form'
+      const footerComps = ['el-table', 'el-pagination']
+      this.panelType = footerComps.includes(tag) ? tag.replace('el-', '') : 'form'
       this.activeData = currentItem
       this.activeId = currentItem.__config__.formId
     },
@@ -468,6 +470,7 @@ export default {
       target = this.cloneComponent(target)
       target = { ...target, ...props }
       this.drawingContainer.push(target)
+      // debugger
     },
     closePagination() {
       // TODO 目前只支持一个表格 一个分页的组合
@@ -476,6 +479,7 @@ export default {
       }
     },
     setPagination({ isShowPagination, ...props }) {
+      // debugger
       if (isShowPagination) {
         this.openPagination(props)
       } else {

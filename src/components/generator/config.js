@@ -566,16 +566,18 @@ export const layoutComponents = [
       layout: 'raw',
       tagIcon: 'pagination',
       label: '分页',
+      isSideComp:true,
       tag: 'el-pagination',
       document:
         'https://element.eleme.cn/#/zh-CN/component/layout#row-attributes'
     },
-    __vModel__: { page: 0, page_size: 20 },
+    __vModel__: { page: 1, page_size: 20, total:2 },
     type: 'default',
     justify: 'start',
     align: 'top',
     background: true,
     pageSize: 20,
+    total:2,
     layout: 'total, prev, pager, next, sizes'
   },
   {
@@ -668,13 +670,16 @@ export const layoutComponents = [
             layout: 'raw',
             tag: 'el-table-column',
             renderKey: 15957617660153,
-            search: true
+            search: true,
+            isOperationCol:false,
+            type: tableColumnType.文本,
+            btnGroup: [],
+            valMap: [{ value: '取值1', color: 'info' }]
           },
           prop: 'id',
           label: 'ID',
-          type: tableColumnType.文本,
-          btnGroup: [],
-          valMap: [{ value: '取值1', color: 'info' }]
+          width:100,
+         
         },
         {
           __config__: {
@@ -684,25 +689,10 @@ export const layoutComponents = [
             search: false,
             isOperationCol: true,
             btnGroup: [{ value: '查看', color: 'primary' }],
-            children: [
-              {
-                __config__: {
-                  label: '按钮',
-                  tag: 'el-button',
-                  tagIcon: 'button',
-                  layout: 'raw',
-                  renderKey: 1595779809901
-                },
-                __slot__: {
-                  default: '主要按钮'
-                },
-                type: 'primary',
-                icon: 'el-icon-search',
-                round: false,
-                size: 'medium'
-              }
-            ]
+            valMap:[]
           },
+
+          width:'',
           label: '操作'
         }
       ]

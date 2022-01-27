@@ -2,6 +2,7 @@
   <div>
     <el-drawer
       v-bind="$attrs"
+      :visible="visibility"
       v-on="$listeners"
       @opened="onOpen"
       @close="onClose"
@@ -48,12 +49,25 @@ export default {
     jsonStr: {
       type: String,
       required: true
+    },
+    visible:{
+      type: Boolean,
+      default :false
     }
   },
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    visibility:{
+      get() {
+        return this.visible
+      },
+      set(val) {
+        this.$emit('update:visible', val)
+      }
+    }
+  },
   watch: {},
   updated() {},
   created() {},
@@ -93,7 +107,9 @@ export default {
         })
       })
     },
-    onClose() {},
+    onClose() {
+      this.visibility = false
+    },
     setEditorValue(id, codeStr) {
       if (this.jsonEditor) {
         this.jsonEditor.setValue(codeStr)
